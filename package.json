@@ -1,6 +1,6 @@
 {
   "name": "third-party-insurance-agent-portal",
-  "version": "1.0.0",
+  "version": "0.1.0-alpha.3",
   "private": true,
   "scripts": {
     "dev": "nuxt",
