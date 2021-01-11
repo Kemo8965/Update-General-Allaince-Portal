@@ -1,28 +1,31 @@
 <template>
   <div>
-    <form id="login-form">
-      <b-field label="Email" type="is-danger" message="This email is invalid">
-        <b-input type="email" value="john@" maxlength="30"> </b-input>
-      </b-field>
-
-      <b-field label="Password">
-        <b-input type="password" value="iwantmytreasure" password-reveal>
-        </b-input>
-      </b-field>
-    </form>
+    <p class="has-text-weight-bold">The url is: {{ url }}</p>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapState } from 'vuex'
 
 export default {
-  name: 'Home',
+  name: 'Dashboard',
 
   middleware: 'auth',
 
+  data() {
+    return {
+      url: null,
+    }
+  },
+
   computed: {
     ...mapGetters('auth', ['loading']),
+
+    ...mapState('auth', { user: 'currentUser' }),
+  },
+
+  mounted() {
+    this.url = process.env.NUXT_ENV_AUTH_URL
   },
 
   methods: {

@@ -37,7 +37,10 @@ export const actions = {
 
       // dispatch('users/cacheUser', authUser, { root: true })
 
-      this.$cookies.set('token', await authUser.getIdToken())
+      this.$cookies.set('token', await authUser.getIdToken(), {
+        sameSite: false,
+        secure: true,
+      })
 
       await dispatch('onAuthStateChanged', { authUser })
 
@@ -60,7 +63,7 @@ export const actions = {
     }
   },
 
-  async onAuthStateChanged({ commit, dispatch }, { authUser }) {
+  async onAuthStateChanged({ commit, getters, dispatch }, { authUser }) {
     try {
       const db = this.$fire.firestore.collection('users')
 
@@ -70,6 +73,15 @@ export const actions = {
       } else {
         // Do something with the authUser and the claims object...
         // dispatch('users/cacheUser', authUser, { root: true })
+
+        if (getters.loggedIn) {
+          return
+        }
+
+        this.$cookies.set('token', await authUser.getIdToken(), {
+          sameSite: false,
+          secure: true,
+        })
 
         const profile = (await db.doc(authUser.uid).get()).data()
         const user = {

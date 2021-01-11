@@ -122,8 +122,8 @@ export default {
 
           this.$buefy.toast.open({
             duration: 5000,
-            message: 'Logged in successfully!',
-            position: 'is-top-right',
+            message: 'Welcome back!',
+            position: 'is-top',
             type: 'is-success',
           })
 
@@ -131,7 +131,7 @@ export default {
 
           this.$router.push({ path: '/' })
         } else {
-          throw new Error('Login failed!')
+          throw new Error('Hmm... something went wrong!')
         }
       } catch (error) {
         this.form.password = null
@@ -141,7 +141,7 @@ export default {
         this.$buefy.toast.open({
           duration: 5000,
           message,
-          position: 'is-top-right',
+          position: 'is-top',
           type: 'is-danger',
         })
       }

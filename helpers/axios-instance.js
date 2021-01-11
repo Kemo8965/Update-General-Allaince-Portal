@@ -11,23 +11,23 @@ import axios from 'axios'
  branch: 1
  */
 export const http = axios.create({
-  baseURL: process.env.VUE_APP_API_URL,
+  baseURL: process.env.NUXT_ENV_API_URL,
 })
 
 export const httpAuth = axios.create({
-  baseURL: process.env.VUE_APP_AUTH_URL,
+  baseURL: process.env.NUXT_ENV_AUTH_URL,
 })
 
 export const httpPay = axios.create({
-  baseURL: process.env.VUE_APP_API_PAY_URL,
+  baseURL: process.env.NUXT_ENV_API_PAY_URL,
 })
 
 export const httpRtsa = axios.create({
-  baseURL: process.env.VUE_APP_RTSA_URL,
+  baseURL: process.env.NUXT_ENV_RTSA_URL,
 })
 
 export const numbergen = axios.create({
-  baseURL: process.env.VUE_APP_NUMBER_GEN_API_URL,
+  baseURL: process.env.NUXT_ENV_NUMBER_GEN_API_URL,
 })
 
 export const branchNumber = 1

@@ -1,8 +1,6 @@
-export default function ({ app, store, redirect }) {
-  const token = app.$cookies.get('token')
-
+export default function ({ store, redirect }) {
   // If user is authenticated
-  if (store.state.auth.currentUser || token) {
+  if (store.state.auth.currentUser) {
     return redirect('/')
   }
 }
