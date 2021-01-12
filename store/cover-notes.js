@@ -17,7 +17,7 @@ export const mutations = {
 }
 
 export const actions = {
-  async init({ commit }) {
+  async load({ commit }) {
     try {
       const { data } = await http.get(`documents/cover-notes`)
       commit(SET_COVER_NOTES, data)

@@ -27,7 +27,7 @@ export const mutations = {
 }
 
 export const actions = {
-  async init({ commit, dispatch }) {
+  async load({ commit, dispatch }) {
     try {
       commit(SET_LOADING, true)
       const { data } = await http.get(`/class`)

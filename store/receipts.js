@@ -100,7 +100,7 @@ export const mutations = {
 }
 
 export const actions = {
-  async init({ commit }) {
+  async load({ commit }) {
     try {
       commit(SET_LOADING, true)
       const { data: receiptsResponse } = await httpPay.get('/receipt')
@@ -333,7 +333,7 @@ export const actions = {
 
       await dispatch('policies/updatePolicy', null, { root: true })
 
-      await dispatch('transactions/init', null, { root: true })
+      await dispatch('transactions/load', null, { root: true })
 
       const transactions = await dispatch(
         'transactions/clientTransactionsById',

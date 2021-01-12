@@ -61,12 +61,14 @@ export const getters = {
     return state.selectedClient
   },
 
-  selectedClientName(state) {
-    return getClientName(state.selectedClient, false)
+  selectedClientName(state, getters) {
+    return getters.selectedClient
+      ? getClientName(state.selectedClient, false)
+      : null
   },
 
-  selectedTitledClientName(state) {
-    return getClientName(state.selectedClient)
+  selectedTitledClientName(state, getters) {
+    return getters.selectedClient ? getClientName(state.selectedClient) : null
   },
 }
 
@@ -101,7 +103,7 @@ export const mutations = {
 }
 
 export const actions = {
-  async init({ commit }) {
+  async load({ commit }) {
     try {
       commit(SET_LOADING, true)
       const { data: individuals } = await http.get('/clients/individual')

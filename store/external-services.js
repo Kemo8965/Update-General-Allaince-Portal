@@ -49,7 +49,7 @@ export const mutations = {
 }
 
 export const actions = {
-  async init({ commit }) {
+  async load({ commit }) {
     try {
       commit(SET_LOADING, true)
       const data = await (

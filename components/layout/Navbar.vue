@@ -39,10 +39,11 @@
           :label="label"
         >
           <b-menu-item
-            v-for="({ icon, itemLabel }, key) in items"
+            v-for="({ icon, itemLabel, link }, key) in items"
             :key="key"
             :icon="icon"
             :label="itemLabel"
+            @click="pushRoute(link)"
           ></b-menu-item>
         </b-menu-list>
 
@@ -69,26 +70,30 @@ export default {
       menuList: [
         {
           label: 'Dashboard',
-          items: [{ icon: 'home', itemLabel: 'Dashboard', link: null }],
+          items: [{ icon: 'home', itemLabel: 'Dashboard', link: '/' }],
         },
         {
           label: 'Actions',
           items: [
-            { icon: 'account', itemLabel: 'Manage Clients', link: null },
+            { icon: 'account', itemLabel: 'Manage Clients', link: '/clients' },
             {
               icon: 'text-box-plus-outline',
               itemLabel: 'Create Policy',
-              link: null,
+              link: '/policies',
             },
           ],
         },
         {
           label: 'Finances',
-          items: [{ icon: 'receipt', itemLabel: 'Receipts', link: null }],
+          items: [
+            { icon: 'receipt', itemLabel: 'Receipts', link: '/receipts' },
+          ],
         },
         {
           label: 'Reports',
-          items: [{ icon: 'file-chart', itemLabel: 'Reports', link: null }],
+          items: [
+            { icon: 'file-chart', itemLabel: 'Reports', link: '/reports' },
+          ],
         },
       ],
     }
@@ -100,6 +105,11 @@ export default {
 
   methods: {
     ...mapActions('auth', ['logOut']),
+
+    pushRoute(path) {
+      this.sidebar = false
+      this.$router.push({ path })
+    },
 
     async endSession() {
       this.sidebar = false

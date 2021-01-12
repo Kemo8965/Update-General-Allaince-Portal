@@ -10,7 +10,7 @@ export const mutations = {
   },
 }
 export const actions = {
-  async init({ commit }) {
+  async load({ commit }) {
     try {
       const { data } = await httpPay.get(`/transaction`)
       commit(SET_TRANSACTIONS, data.data)
