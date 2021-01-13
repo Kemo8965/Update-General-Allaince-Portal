@@ -12,7 +12,7 @@
     <div class="mt-4 box">
       <b-field grouped group-multiline>
         <!-- Client -->
-        <b-field expanded>
+        <b-field expanded :type="clientState">
           <template v-slot:label>
             Client <span class="has-text-danger">*</span>
           </template>
@@ -38,16 +38,17 @@
         </b-field>
 
         <!-- Start date -->
-        <b-field expanded>
+        <b-field expanded :type="startDateState">
           <template v-slot:label>
             Start Date <span class="has-text-danger">*</span>
           </template>
           <b-datepicker
-            v-model="quotation.startDate"
+            v-model="$v.quotation.startDate.$model"
             placeholder="-- Please select start date --"
             icon="calendar-blank-outline"
             :min-date="minDate"
             mobile-native
+            :disabled="!$v.quotation.clientCode.$dirty"
             @input="onStartDateChange"
           ></b-datepicker>
         </b-field>
@@ -56,7 +57,7 @@
         <b-field expanded>
           <template v-slot:label> End Date </template>
           <b-datepicker
-            v-model="quotation.endDate"
+            v-model="$v.quotation.endDate.$model"
             icon="calendar-check"
             :disabled="true"
           ></b-datepicker>
@@ -65,15 +66,16 @@
 
       <b-field class="mb-4" grouped group-multiline>
         <!-- Currency -->
-        <b-field class="mt-4" expanded>
+        <b-field class="mt-4" expanded :type="currencyState">
           <template v-slot:label>
             Currency <span class="has-text-danger">*</span>
           </template>
           <b-select
-            v-model="quotation.currency"
+            v-model="$v.quotation.currency.$model"
             placeholder="-- Please select a currency --"
             icon="cash"
             expanded
+            :disabled="!$v.quotation.startDate.$dirty"
           >
             <option
               v-for="(currency, index) in currencies"
@@ -86,14 +88,15 @@
         </b-field>
 
         <!-- Quarters -->
-        <b-field class="mt-4" expanded>
+        <b-field class="mt-4" expanded :type="quarterState">
           <template v-slot:label>
             Quarters <span class="has-text-danger">*</span>
           </template>
           <b-select
-            v-model="quotation.quarter"
+            v-model="$v.quotation.quarter.$model"
             placeholder="-- Please select a quarter --"
             expanded
+            :disabled="!$v.quotation.currency.$dirty"
             @input="onQuarterChange"
           >
             <option
@@ -132,77 +135,82 @@
         <h4 class="title is-4">Particulars of Vehicle</h4>
         <b-field grouped group-multiline>
           <!-- Vehicle Make -->
-          <b-field expanded>
+          <b-field expanded :type="vehMakeState">
             <template v-slot:label>
               Vehicle Make <span class="has-text-danger">*</span>
             </template>
             <b-input
-              v-model="risk.vehicle.vehicleMake"
+              v-model="$v.risk.vehicle.vehicleMake.$model"
               placeholder="Toyota"
             ></b-input>
           </b-field>
 
           <!-- Vehicle Model -->
-          <b-field expanded>
+          <b-field expanded :type="vehModelState">
             <template v-slot:label>
               Vehicle Model <span class="has-text-danger">*</span>
             </template>
             <b-input
-              v-model="risk.vehicle.vehicleModel"
+              v-model="$v.risk.vehicle.vehicleModel.$model"
               placeholder="Corolla"
+              :disabled="!$v.risk.vehicle.vehicleMake.$dirty"
             ></b-input>
           </b-field>
 
           <!-- Year of Make -->
-          <b-field expanded>
+          <b-field expanded :type="yearOfManState">
             <template v-slot:label>
               Year of Make <span class="has-text-danger">*</span>
             </template>
             <b-numberinput
-              v-model="risk.vehicle.yearOfManufacture"
+              v-model="$v.risk.vehicle.yearOfManufacture.$model"
               v-mask="'####'"
               placeholder="2005"
+              :disabled="!$v.risk.vehicle.vehicleModel.$dirty"
             ></b-numberinput>
           </b-field>
         </b-field>
         <b-field grouped group-multiline>
           <!-- Registration Number -->
-          <b-field class="mt-4" expanded>
+          <b-field class="mt-4" expanded :type="regNumberState">
             <template v-slot:label>
               Registration Number <span class="has-text-danger">*</span>
             </template>
             <b-input
-              v-model="risk.vehicle.regNumber"
+              v-model="$v.risk.vehicle.regNumber.$model"
               placeholder="ABC123ZM"
+              :disabled="!$v.risk.vehicle.yearOfManufacture.$dirty"
             ></b-input>
           </b-field>
 
           <!-- Engine Number -->
-          <b-field class="mt-4" expanded>
+          <b-field class="mt-4" expanded :type="engNumState">
             <template v-slot:label>
               Engine Number <span class="has-text-danger">*</span>
             </template>
             <b-input
-              v-model="risk.vehicle.engineNumber"
+              v-model="$v.risk.vehicle.engineNumber.$model"
               placeholder="Engine number"
+              :disabled="!$v.risk.vehicle.regNumber.$dirty"
             ></b-input>
           </b-field>
 
           <!-- Chassis Number -->
-          <b-field class="mt-4" expanded>
+          <b-field class="mt-4" expanded :type="chassisNumState">
             <template v-slot:label>
               Chassis Number <span class="has-text-danger">*</span>
             </template>
             <b-input
-              v-model="risk.vehicle.chassisNumber"
+              v-model="$v.risk.vehicle.chassisNumber.$model"
               placeholder="Chassis Number"
+              :disabled="!$v.risk.vehicle.engineNumber.$dirty"
             ></b-input>
           </b-field>
         </b-field>
 
         <b-field grouped group-multiline>
           <!-- Color -->
-          <b-field class="mt-4" expanded>
+          <b-field class="mt-4" expanded :type="colorState">
             <template v-slot:label>
               Color <span class="has-text-danger">*</span>
             </template>
@@ -214,6 +222,7 @@
               clearable
               icon="paint"
               :data="filteredColors"
+              :disabled="!$v.risk.vehicle.chassisNumber.$dirty"
               @select="colorSelected"
             >
               <template v-slot:header>
@@ -226,37 +235,42 @@
           </b-field>
 
           <!-- Cubic Capacity -->
-          <b-field class="mt-4" expanded>
+          <b-field class="mt-4" expanded :type="ccState">
             <template v-slot:label>
               Cubic Capacity <span class="has-text-danger">*</span>
             </template>
             <b-numberinput
-              v-model="risk.vehicle.cubicCapacity"
+              v-model="$v.risk.vehicle.cubicCapacity.$model"
               v-mask="'####'"
               placeholder="1834"
+              :disabled="!$v.risk.vehicle.color.$dirty"
             ></b-numberinput>
           </b-field>
 
           <!-- Seating Capacity -->
-          <b-field class="mt-4" expanded>
+          <b-field class="mt-4" expanded :type="seatCapState">
             <template v-slot:label>
               Seating Capacity <span class="has-text-danger">*</span>
             </template>
             <b-numberinput
-              v-model="risk.vehicle.seatingCapacity"
+              v-model="$v.risk.vehicle.seatingCapacity.$model"
               v-mask="'##'"
               placeholder="5"
+              :disabled="!$v.risk.vehicle.cubicCapacity.$dirty"
             ></b-numberinput>
           </b-field>
         </b-field>
 
         <b-field class="mb-4" grouped group-multiline>
           <!-- Body Type -->
-          <b-field class="mt-4" expanded>
+          <b-field class="mt-4" expanded :type="bodyState">
             <template v-slot:label>
               Body Type <span class="has-text-danger">*</span>
             </template>
-            <b-select placeholder="-- Please select a body type --">
+            <b-select
+              placeholder="-- Please select a body type --"
+              :disabled="!$v.risk.vehicle.seatingCapacity.$dirty"
+            >
               <option
                 v-for="(body, index) in vehicleBodyTypes"
                 :key="index"
@@ -278,13 +292,13 @@
               <span class="button is-static">{{ quotation.currency }}</span>
             </p>
             <b-input
-              v-model="risk.sumInsured"
+              v-model="$v.risk.sumInsured.$model"
               v-money="money"
               placeholder="Sum insured"
               expanded
             ></b-input>
             <!-- <b-numberinput
-              v-model="risk.sumInsured"
+              v-model="$v.risk.sumInsured.$model"
               v-mask="'###########'"
               placeholder="Sum insured"
             ></b-numberinput> -->
@@ -296,7 +310,7 @@
               Class of Vehicle <span class="has-text-danger">*</span>
             </template>
             <b-select
-              v-model="risk.productType"
+              v-model="$v.risk.productType.$model"
               placeholder="-- Please select a vehicle class --"
               expanded
               @input="onProductTypeChange"
@@ -319,7 +333,7 @@
               Risk Start Date <span class="has-text-danger">*</span>
             </template>
             <b-datepicker
-              v-model="risk.riskStartDate"
+              v-model="$v.risk.riskStartDate.$model"
               placeholder="-- Please select start date --"
               icon="calendar-blank-outline"
               :min-date="minDate"
@@ -334,7 +348,7 @@
               Risk Quarters <span class="has-text-danger">*</span>
             </template>
             <b-select
-              v-model="risk.riskQuarter"
+              v-model="$v.risk.riskQuarter.$model"
               placeholder="-- Please select a quarter --"
               expanded
               @input="onRiskQuarterChange"
@@ -353,7 +367,7 @@
           <b-field class="mt-4" expanded>
             <template v-slot:label> Risk End Date </template>
             <b-datepicker
-              v-model="risk.riskEndDate"
+              v-model="$v.risk.riskEndDate.$model"
               icon="calendar-check"
               :disabled="true"
             ></b-datepicker>
@@ -363,12 +377,18 @@
         <b-field grouped group-multiline>
           <!-- Expiry Quarter -->
           <b-field class="mt-4" label="Expiry Quarter" expanded>
-            <b-input v-model="risk.expiryQuarter" :disabled="true"></b-input>
+            <b-input
+              v-model="$v.risk.expiryQuarter.$model"
+              :disabled="true"
+            ></b-input>
           </b-field>
 
           <!-- Number of Days -->
           <b-field class="mt-4" label="Number of Days" expanded>
-            <b-input v-model="risk.numberOfDays" :disabled="true"></b-input>
+            <b-input
+              v-model="$v.risk.numberOfDays.$model"
+              :disabled="true"
+            ></b-input>
           </b-field>
         </b-field>
 
@@ -491,7 +511,7 @@
             <!-- Death and Injury Per Person -->
             <b-field label="Death and Injury Per Person">
               <b-numberinput
-                v-model="deathAndInjuryPerPerson"
+                v-model="$v.deathAndInjuryPerPerson.$model"
                 step=".01"
                 expanded
                 @input="onDeathAndInjuryPerPersonChange"
@@ -501,7 +521,7 @@
             <!-- Rate -->
             <b-field label="Rate">
               <b-numberinput
-                v-model="deathAndInjuryPerPersonRate"
+                v-model="$v.deathAndInjuryPerPersonRate.$model"
                 step=".01"
                 expanded
                 @input="onDeathAndInjuryPerPersonChange"
@@ -516,7 +536,7 @@
                 </span>
               </p>
               <b-input
-                v-model="deathAndInjuryPerPersonPremium"
+                v-model="$v.deathAndInjuryPerPersonPremium.$model"
                 :disabled="true"
                 expanded
               ></b-input>
@@ -527,7 +547,7 @@
             <!-- Death and Injury Per Event -->
             <b-field label="Death and Injury Per Event">
               <b-numberinput
-                v-model="deathAndInjuryPerEvent"
+                v-model="$v.deathAndInjuryPerEvent.$model"
                 step=".01"
                 expanded
                 @input="onDeathAndInjuryPerEventChange"
@@ -537,7 +557,7 @@
             <!-- Rate -->
             <b-field label="Rate">
               <b-numberinput
-                v-model="deathAndInjuryPerEventRate"
+                v-model="$v.deathAndInjuryPerEventRate.$model"
                 step=".01"
                 expanded
                 @input="onDeathAndInjuryPerEventChange"
@@ -552,7 +572,7 @@
                 </span>
               </p>
               <b-input
-                v-model="deathAndInjuryPerEventPremium"
+                v-model="$v.deathAndInjuryPerEventPremium.$model"
                 :disabled="true"
                 expanded
               ></b-input>
@@ -563,7 +583,7 @@
             <!-- Property Damage-->
             <b-field label="Property Damage">
               <b-numberinput
-                v-model="propertyDamage"
+                v-model="$v.propertyDamage.$model"
                 step=".01"
                 expanded
                 @input="onPropertyDamageChange"
@@ -573,7 +593,7 @@
             <!-- Rate -->
             <b-field label="Rate">
               <b-numberinput
-                v-model="propertyDamageRate"
+                v-model="$v.propertyDamageRate.$model"
                 step=".01"
                 expanded
                 @input="onPropertyDamageChange"
@@ -588,7 +608,7 @@
                 </span>
               </p>
               <b-input
-                v-model="propertyDamagePremium"
+                v-model="$v.propertyDamagePremium.$model"
                 :disabled="true"
                 expanded
               ></b-input>
@@ -605,7 +625,7 @@
           <!-- Combined Limit -->
           <b-field label="Third Party Combined Limit">
             <b-numberinput
-              v-model="combinedLimits"
+              v-model="$v.combinedLimits.$model"
               step=".01"
               expanded
               @input="onCombinedLimitsChange"
@@ -615,7 +635,7 @@
           <!-- Rate -->
           <b-field label="Rate">
             <b-numberinput
-              v-model="combinedLimitsRate"
+              v-model="$v.combinedLimitsRate.$model"
               step=".01"
               expanded
               @input="onCombinedLimitsChange"
@@ -630,7 +650,7 @@
               </span>
             </p>
             <b-input
-              v-model="combinedLimitsPremium"
+              v-model="$v.combinedLimitsPremium.$model"
               :disabled="true"
               expanded
             ></b-input>
@@ -667,14 +687,14 @@
             </b-field>
           </b-field>
 
-          <div class="mt-6 buttons">
+          <b-field class="mt-6 buttons" position="is-centered">
             <b-button type="is-primary" icon-left="upload" @click="onRiskSubmit"
               >Add Risk</b-button
             >
             <b-button icon-left="reload" @click="onRiskReset">
               Reset Form
             </b-button>
-          </div>
+          </b-field>
         </div>
       </div>
 
@@ -700,21 +720,25 @@ import { DateTime } from 'luxon'
 import currency from 'currency.js'
 import { VMoney } from 'v-money'
 
-// import {
-//   alpha,
-//   and,
-//   decimal,
-//   helpers,
-//   minValue,
-//   numeric,
-//   or,
-//   required,
-//   requiredIf,
-// } from 'vuelidate/lib/validators'
-// const name = helpers.regex('name', /^[a-zA-z\s]+/i)
-// const nameNum = helpers.regex('nameNum', /^[a-zA-z0-9\s]+/i)
-// const alphaSym = helpers.regex('alphaSym', /^[a-zA-z0-9\-_\s]+/i)
-// const decimalOrNum = or(decimal, numeric)
+import {
+  alpha,
+  alphaNum,
+  and,
+  decimal,
+  helpers,
+  minValue,
+  numeric,
+  or,
+  required,
+  requiredIf,
+} from 'vuelidate/lib/validators'
+const name = helpers.regex('name', /^[a-zA-z\s]+/i)
+const nameNum = helpers.regex('nameNum', /^[a-zA-z0-9\s]+/i)
+const alphaSym = helpers.regex('alphaSym', /^[a-zA-z0-9\-_\s]+/i)
+const decimalOrNum = or(decimal, numeric)
+const yearOfManLength = helpers.regex('yearOfManLength', /^\d{4}$/)
+const seatingCapLength = helpers.regex('seatingCapLength', /^\d{1,2}$/)
+const cubicCapLength = helpers.regex('cubicCapLength', /^\d{4}$/)
 
 export default {
   name: 'CreatePolicy',
@@ -926,6 +950,535 @@ export default {
       const arr = Object.entries(this.computedValues)
       return arr.filter((_, index) => index >= 3)
     },
+
+    validClient() {
+      return this.$v.quotation.clientCode.$dirty
+        ? !this.$v.quotation.clientCode.$invalid
+        : null
+    },
+
+    // Policy detail validations
+    clientState() {
+      if (this.$v.quotation.clientCode.$dirty) {
+        return this.validClient ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
+    validStartDate() {
+      return this.$v.quotation.startDate.$dirty
+        ? !this.$v.quotation.startDate.$invalid
+        : null
+    },
+
+    startDateState() {
+      if (this.$v.quotation.startDate.$dirty) {
+        return this.validStartDate ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
+    validQuarter() {
+      return this.$v.quotation.quarter.$dirty
+        ? !this.$v.quotation.quarter.$invalid
+        : null
+    },
+
+    quarterState() {
+      if (this.$v.quotation.quarter.$dirty) {
+        return this.validQuarter ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
+    validCurrency() {
+      return this.$v.quotation.currency.$dirty
+        ? !this.$v.quotation.currency.$invalid
+        : null
+    },
+
+    currencyState() {
+      if (this.$v.quotation.currency.$dirty) {
+        return this.validCurrency ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
+    // Risk validations
+    validVehicleMake() {
+      return this.$v.risk.vehicle.vehicleMake.$dirty
+        ? !this.$v.risk.vehicle.vehicleMake.$invalid
+        : null
+    },
+
+    vehMakeState() {
+      if (this.$v.risk.vehicle.vehicleMake.$dirty) {
+        return this.validVehicleMake ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
+    validVehicleModel() {
+      return this.$v.risk.vehicle.vehicleModel.$dirty
+        ? !this.$v.risk.vehicle.vehicleModel.$invalid
+        : null
+    },
+
+    vehModelState() {
+      if (this.$v.risk.vehicle.vehicleModel.$dirty) {
+        return this.validVehicleModel ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
+    validYearOfManufacture() {
+      return this.$v.risk.vehicle.yearOfManufacture.$dirty
+        ? !this.$v.risk.vehicle.yearOfManufacture.$invalid &&
+            this.$v.risk.vehicle.yearOfManufacture.$model <=
+              this.minDate.getFullYear()
+        : null
+    },
+
+    yearOfManState() {
+      if (this.$v.risk.vehicle.yearOfManufacture.$dirty) {
+        return this.validYearOfManufacture ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
+    validRegNumber() {
+      if (this.$v.risk.vehicle.regNumber.$dirty) {
+        const test = this.activePolicyRisks.some((risk) => {
+          return (
+            risk.vehicle.regNumber.toLowerCase() ===
+            this.$v.risk.vehicle.regNumber.$model.toLowerCase()
+          )
+        })
+
+        if (test)
+          this.$bvToast.toast(
+            `Error: A vehicle with this registration number is already part of an active policy!`,
+            {
+              title: `Create Quote`,
+              autoHideDelay: 5000,
+              appendToast: true,
+              variant: 'danger',
+            }
+          )
+
+        return !this.$v.risk.vehicle.regNumber.$invalid && !test
+      }
+
+      return null
+    },
+
+    regNumberState() {
+      if (this.$v.risk.vehicle.regNumber.$dirty) {
+        return this.validRegNumber ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
+    validEngineNumber() {
+      if (this.$v.risk.vehicle.engineNumber.$dirty) {
+        const test = this.activePolicyRisks.some((risk) => {
+          return (
+            risk.vehicle.engineNumber.toLowerCase() ===
+            this.$v.risk.vehicle.engineNumber.$model.toLowerCase()
+          )
+        })
+
+        if (test)
+          this.$buefy.toast.open({
+            duration: 5000,
+            message: `Error: A vehicle with this engine number is already part of an active policy!`,
+            position: 'is-top',
+            type: 'is-danger',
+          })
+
+        return !this.$v.risk.vehicle.engineNumber.$invalid && !test
+      }
+
+      return null
+    },
+
+    engNumState() {
+      if (this.$v.risk.vehicle.engineNumber.$dirty) {
+        return this.validEngineNumber ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
+    validChassisNumber() {
+      if (this.$v.risk.vehicle.chassisNumber.$dirty) {
+        const test = this.activePolicyRisks.some((risk) => {
+          return (
+            risk.vehicle.chassisNumber.toLowerCase() ===
+            this.$v.risk.vehicle.chassisNumber.$model.toLowerCase()
+          )
+        })
+
+        if (test)
+          this.$buefy.toast.open({
+            message: `Error: A vehicle with this chassis number is already part of an active policy!`,
+            duration: 5000,
+            position: 'is-top',
+            type: 'is-danger',
+          })
+
+        return !this.$v.risk.vehicle.chassisNumber.$invalid && !test
+      }
+
+      return null
+    },
+
+    chassisNumState() {
+      if (this.$v.risk.vehicle.chassisNumber.$dirty) {
+        return this.validChassisNumber ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
+    validColor() {
+      return this.$v.risk.vehicle.color.$dirty
+        ? !this.$v.risk.vehicle.color.$invalid
+        : null
+    },
+
+    colorState() {
+      if (this.$v.risk.vehicle.color.$dirty) {
+        return this.validColor ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
+    validCubicCapacity() {
+      return this.$v.risk.vehicle.cubicCapacity.$dirty
+        ? !this.$v.risk.vehicle.cubicCapacity.$invalid
+        : null
+    },
+
+    ccState() {
+      if (this.$v.risk.vehicle.cubicCapacity.$dirty) {
+        return this.validCubicCapacity ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
+    validSeatingCapacity() {
+      return this.$v.risk.vehicle.seatingCapacity.$dirty
+        ? !this.$v.risk.vehicle.seatingCapacity.$invalid
+        : null
+    },
+
+    seatCapState() {
+      if (this.$v.risk.vehicle.seatingCapacity.$dirty) {
+        return this.validSeatingCapacity ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
+    validBodyType() {
+      return this.$v.risk.vehicle.bodyType.$dirty
+        ? !this.$v.risk.vehicle.bodyType.$invalid
+        : null
+    },
+
+    bodyState() {
+      if (this.$v.risk.vehicle.bodyType.$dirty) {
+        return this.validBodyType ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
+    validProductType() {
+      return this.$v.risk.productType.$dirty
+        ? !this.$v.risk.productType.$invalid
+        : null
+    },
+
+    validRiskStartDate() {
+      return this.$v.risk.riskStartDate.$dirty
+        ? !this.$v.risk.riskStartDate.$invalid
+        : null
+    },
+
+    validRiskQuarter() {
+      return this.$v.risk.riskQuarter.$dirty
+        ? !this.$v.risk.riskQuarter.$invalid &&
+            this.$v.risk.riskQuarter.$model <= this.quotation.quarter
+        : null
+    },
+
+    validRiskEndDate() {
+      return this.$v.risk.riskEndDate.$dirty
+        ? !this.$v.risk.riskEndDate.$invalid
+        : null
+    },
+
+    validRiskExpiryQuarter() {
+      return this.$v.risk.expiryQuarter.$dirty
+        ? !this.$v.risk.expiryQuarter.$invalid
+        : null
+    },
+
+    validNumberOfDays() {
+      return this.$v.risk.numberOfDays.$dirty
+        ? !this.$v.risk.numberOfDays.$invalid
+        : null
+    },
+
+    validBasicPremiumType() {
+      return this.$v.basicPremiumType.$dirty
+        ? !this.$v.basicPremiumType.$invalid
+        : null
+    },
+
+    optionalSumInsured() {
+      return this.risk.insuranceType ? this.risk.insuranceType === 7001 : false
+    },
+
+    validSumInsured() {
+      return this.$v.risk.sumInsured.$dirty
+        ? !this.$v.risk.sumInsured.$invalid
+        : null
+    },
+
+    optionalPremiumRate() {
+      return this.basicPremiumType
+        ? this.basicPremiumType.includes('Rate')
+        : false
+    },
+
+    validPremiumRate() {
+      return this.$v.risk.premiumRate.$dirty
+        ? !this.$v.risk.premiumRate.$invalid
+        : null
+    },
+
+    optionalPremiumAmount() {
+      return this.basicPremiumType
+        ? this.basicPremiumType.includes('Amount')
+        : false
+    },
+
+    validPremiumAmount() {
+      return this.$v.risk.basicPremiumAmount.$dirty
+        ? !this.$v.risk.basicPremiumAmount.$invalid
+        : null
+    },
+
+    optionalDiscountType() {
+      return !!this.selectedDiscount
+    },
+
+    validDiscountType() {
+      return this.$v.discountType.$dirty ? !this.$v.discountType.$invalid : null
+    },
+
+    optionalDiscountRate() {
+      return this.discountType ? this.discountType.includes('Rate') : false
+    },
+
+    validDiscountRate() {
+      return this.$v.discountRate.$dirty ? !this.$v.discountRate.$invalid : null
+    },
+
+    optionalDiscountAmount() {
+      return this.discountType ? this.discountType.includes('Amount') : false
+    },
+
+    validDiscountAmount() {
+      return this.$v.discountAmount.$dirty
+        ? !this.$v.discountAmount.$invalid
+        : null
+    },
+
+    optionalExtensionType() {
+      return !!this.selectedExtension
+    },
+
+    optionalExtensionAmount() {
+      return !!this.extensionType
+    },
+
+    validLiabilityType() {
+      return this.$v.liabilityType.$dirty
+        ? !this.$v.liabilityType.$invalid
+        : null
+    },
+
+    validThirdPartyCombinedLimit() {
+      return !this.$v.combinedLimits.$invalid
+    },
+
+    validThirdPartyCombinedRate() {
+      return !this.$v.combinedLimitsRate.$invalid
+    },
+
+    validDeathAndInjuryPerPerson() {
+      return !this.$v.deathAndInjuryPerPerson.$invalid
+    },
+
+    validDeathAndInjuryPerPersonRate() {
+      return !this.$v.deathAndInjuryPerPersonRate.$invalid
+    },
+
+    validDeathAndInjuryPerEvent() {
+      return !this.$v.deathAndInjuryPerEvent.$invalid
+    },
+
+    validDeathAndInjuryPerEventRate() {
+      return !this.$v.deathAndInjuryPerEventRate.$invalid
+    },
+
+    validPropertyDamage() {
+      return !this.$v.propertyDamage.$invalid
+    },
+
+    validPropertyDamageRate() {
+      return !this.$v.propertyDamageRate.$invalid
+    },
+  },
+
+  validations() {
+    return {
+      quotation: {
+        clientCode: { required },
+        startDate: { required },
+        endDate: { required },
+        currency: { required, alpha },
+        quarter: { required, numeric },
+      },
+
+      // Risk model
+      liabilityType: { name, required },
+      discountType: {
+        discountType: and(
+          alpha,
+          requiredIf(() => this.optionalDiscountType)
+        ),
+      },
+      discountRate: {
+        discountRate: and(
+          decimalOrNum,
+          requiredIf(() => this.optionalDiscountRate)
+        ),
+      },
+      discountAmount: {
+        discountAmount: and(
+          decimalOrNum,
+          requiredIf(() => this.optionalDiscountAmount)
+        ),
+      },
+      extensionType: {
+        extensionType: and(
+          alpha,
+          requiredIf(() => this.optionalExtensionType)
+        ),
+      },
+      extensionAmount: {
+        extensionAmount: and(
+          decimalOrNum,
+          requiredIf(() => this.optionalExtensionAmount)
+        ),
+      },
+      combinedLimits: {
+        decimalOrNum,
+        required,
+        minValue: minValue(this.defaultCombinedLimitsMin),
+      },
+      combinedLimitsRate: { decimalOrNum, required, minValue: minValue(0) },
+      combinedLimitsPremium: { decimalOrNum, required, minValue: minValue(0) },
+      deathAndInjuryPerPerson: {
+        decimalOrNum,
+        required,
+        minValue: minValue(this.defaultDeathAndInjuryPerPersonMin),
+      },
+      deathAndInjuryPerPersonRate: {
+        decimalOrNum,
+        required,
+        minValue: minValue(0),
+      },
+      deathAndInjuryPerPersonPremium: {
+        decimalOrNum,
+        required,
+        minValue: minValue(0),
+      },
+      deathAndInjuryPerEvent: {
+        decimalOrNum,
+        required,
+        minValue: minValue(this.defaultDeathAndInjuryPerEventMin),
+      },
+      deathAndInjuryPerEventRate: {
+        decimalOrNum,
+        required,
+        minValue: minValue(0),
+      },
+      deathAndInjuryPerEventPremium: {
+        decimalOrNum,
+        required,
+        minValue: minValue(0),
+      },
+      propertyDamage: {
+        decimalOrNum,
+        required,
+        minValue: minValue(this.defaultPropertyDamageMin),
+      },
+      propertyDamageRate: { decimalOrNum, required, minValue: minValue(0) },
+      propertyDamagePremium: { decimalOrNum, required, minValue: minValue(0) },
+      risk: {
+        insuranceType: { required },
+        productType: { required },
+        riskStartDate: { required },
+        riskQuarter: { required },
+        riskEndDate: { required },
+        expiryQuarter: { required },
+        numberOfDays: { required, numeric },
+        // sumInsured: {
+        //   sumInsured: and(decimalOrNum, requiredIf(() => this.optionalSumInsured)),
+        // },
+        sumInsured: { decimalOrNum },
+        premiumRate: {
+          premiumRate: and(
+            decimalOrNum,
+            requiredIf(() => this.optionalPremiumRate)
+          ),
+        },
+        basicPremiumAmount: {
+          basicPremiumAmount: and(
+            decimalOrNum,
+            requiredIf(() => this.optionalPremiumAmount)
+          ),
+        },
+        vehicle: {
+          vehicleMake: { required, name },
+          vehicleModel: { required, nameNum },
+          yearOfManufacture: { required, yearOfManLength },
+          regNumber: { required, alphaNum },
+          engineNumber: { required, alphaSym },
+          chassisNumber: { required, alphaSym },
+          color: { required, name },
+          cubicCapacity: { required, cubicCapLength },
+          seatingCapacity: { required, seatingCapLength },
+          bodyType: { required },
+        },
+      },
+    }
   },
 
   async created() {
@@ -949,12 +1502,16 @@ export default {
 
     ...mapActions('external-services', ['addColor']),
 
-    clientSelected(option) {
+    clientSelected(option, event) {
+      this.$v.quotation.clientCode.$touch()
       if (option) this.quotation.clientCode = option.value
+      if (!event) this.quotation.clientCode = null
     },
 
-    colorSelected(color) {
+    colorSelected(color, event) {
+      this.$v.risk.vehicle.color.$touch()
       if (color) this.risk.vehicle.color = color
+      if (!event) this.risk.vehicle.color = null
     },
 
     showAddColor() {
@@ -969,6 +1526,7 @@ export default {
         onConfirm: (value) => {
           this.addColor(value)
           this.$refs.colorComplete.setSelected(value)
+          this.$v.risk.vehicle.color.$model = value
         },
       })
     },

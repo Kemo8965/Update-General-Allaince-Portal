@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-navbar spaced shadow :mobile-burger="false">
+    <b-navbar spaced shadow>
       <template v-slot:brand>
         <nuxt-link :to="{ path: '/' }">
           <img
@@ -25,7 +25,9 @@
             <!-- <b-button type="is-primary" @click="endSession">
               <strong>Log out</strong>
             </b-button> -->
-            <b-button icon-left="menu" @click="sidebar = !sidebar"> </b-button>
+            <b-button icon-left="menu" @click="sidebar = !sidebar"
+              >Menu</b-button
+            >
           </div>
         </b-navbar-item>
       </template>
