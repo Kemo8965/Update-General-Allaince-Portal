@@ -17,7 +17,7 @@
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
-  name: 'Clients',
+  name: 'ManageClients',
 
   middleware: 'auth',
 

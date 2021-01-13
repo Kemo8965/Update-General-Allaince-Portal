@@ -1,6 +1,7 @@
 import {
   SET_COUNTRIES,
   SET_COUNTRY_CALLING_CODES,
+  ADD_COLOR,
   SET_COLORS,
   SET_LOADING,
 } from '@/helpers/mutation-types'
@@ -46,6 +47,10 @@ export const mutations = {
   [SET_COLORS](state, payload) {
     state.colors = payload
   },
+
+  [ADD_COLOR](state, color) {
+    state.colors.push(color)
+  },
 }
 
 export const actions = {
@@ -85,5 +90,9 @@ export const actions = {
       commit(SET_LOADING, false)
       console.error(error.message)
     }
+  },
+
+  addColor({ commit }, color) {
+    commit(ADD_COLOR, color)
   },
 }

@@ -37,7 +37,13 @@ export default {
   css: ['@/assets/css/main.css'],
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
-  plugins: ['@/plugins/vuelidate.js'],
+  plugins: [
+    '@/plugins/vuelidate.js',
+    { src: '@/plugins/vue-luxon.js', mode: 'client' },
+    { src: '@/plugins/vue-currency-filter.js', mode: 'client' },
+    { src: '@/plugins/vue-lodash-filter.js', mode: 'client' },
+    { src: '@/plugins/vue-mask.js', mode: 'client' },
+  ],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
   components: true,

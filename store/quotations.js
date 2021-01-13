@@ -171,24 +171,24 @@ export const actions = {
         { root: true }
       )
 
-      await http.post(`/quotation/${quotation.class.id}`, quotation)
+      // await http.post(`/quotation/${quotation.class.id}`, quotation)
 
       // Load quotations after posting
       await dispatch('load')
 
       // Get necessary quotation
-      const submittedQuote = await dispatch(
-        'quotationByQuoteNumber',
-        quotation.quoteNumber
-      )
+      // const submittedQuote = await dispatch(
+      //   'quotationByQuoteNumber',
+      //   quotation.quoteNumber
+      // )
 
-      asyncForEach(submittedQuote.risks, async (risk, index) => {
-        await http.post(
-          `/vehicle-details/${risk.id}`,
-          quotation.risks[index].vehicle
-        )
-      })
-      // console.info('Quotation submitted:', JSON.stringify(quotation))
+      // asyncForEach(submittedQuote.risks, async (risk, index) => {
+      //   await http.post(
+      //     `/vehicle-details/${risk.id}`,
+      //     quotation.risks[index].vehicle
+      //   )
+      // })
+      console.info('Quotation submitted:', JSON.stringify(quotation))
 
       commit(SET_LOADING, false)
     } catch (error) {
@@ -297,8 +297,8 @@ function onStartDateChange(date, state) {
   }
 }
 
-async function asyncForEach(array, callback) {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array)
-  }
-}
+// async function asyncForEach(array, callback) {
+//   for (let index = 0; index < array.length; index++) {
+//     await callback(array[index], index, array)
+//   }
+// }

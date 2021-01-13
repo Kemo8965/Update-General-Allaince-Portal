@@ -4,7 +4,7 @@
       <Navbar />
     </header>
     <!-- <div class=" is-flex-grow-1 has-background-light"> -->
-    <main class="app-content has-background-light">
+    <main class="app-content">
       <Nuxt />
     </main>
     <!-- </div> -->
@@ -21,6 +21,7 @@ body {
   margin: 0;
   height: 100%;
   width: 100%;
+  background-color: whitesmoke;
 }
 
 .app-container {

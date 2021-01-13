@@ -77,8 +77,8 @@ export default {
           items: [
             { icon: 'account', itemLabel: 'Manage Clients', link: '/clients' },
             {
-              icon: 'text-box-plus-outline',
-              itemLabel: 'Create Policy',
+              icon: 'shield-car',
+              itemLabel: 'Policies',
               link: '/policies',
             },
           ],

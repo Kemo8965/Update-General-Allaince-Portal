@@ -37,6 +37,13 @@ export const getters = {
     return state.all
   },
 
+  clientList(_, getters) {
+    return getters.allClients.map((client) => ({
+      text: getClientName(client, false),
+      value: client.id,
+    }))
+  },
+
   individualClients(state) {
     return state.individual
   },

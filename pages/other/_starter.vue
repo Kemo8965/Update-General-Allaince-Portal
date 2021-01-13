@@ -1,6 +1,6 @@
 <template>
   <div class="grid">
-    <div class="content-area"></div>
+    <div class="content-area mt-4 p-4"></div>
   </div>
 </template>
 
@@ -33,7 +33,7 @@ export default {
 <style scoped>
 .grid {
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-columns: 1fr max-content;
 }
 
 .content-area {
