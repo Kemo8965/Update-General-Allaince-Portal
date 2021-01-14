@@ -182,7 +182,7 @@ export const actions = {
         quotation.quoteNumber
       )
 
-      asyncForEach(submittedQuote.risks, async (risk, index) => {
+      await asyncForEach(submittedQuote.risks, async (risk, index) => {
         await http.post(
           `/vehicle-details/${risk.id}`,
           quotation.risks[index].vehicle
