@@ -1,13 +1,7 @@
 <template>
   <div class="columns">
     <div class="column mt-6 px-6">
-      <b-tabs
-        v-model="activeTab"
-        vertical
-        position="is-left"
-        type="is-toggle"
-        destroy-on-hide
-      >
+      <b-tabs v-model="activeTab" vertical position="is-left" type="is-toggle">
         <b-tab-item label="Create New Policy">
           <create-new-policy ref="createPolicy"></create-new-policy>
         </b-tab-item>
@@ -31,7 +25,7 @@ export default {
 
   data() {
     return {
-      activeTab: 1,
+      activeTab: 0,
     }
   },
 

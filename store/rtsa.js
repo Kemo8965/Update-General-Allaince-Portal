@@ -12,8 +12,8 @@ export const actions = {
           reject(new Error('Promise error!'))
         }, 3000)
       })
-    } catch ({ message }) {
-      console.error(message)
+    } catch (error) {
+      console.error(error.message)
       throw error
     }
   },

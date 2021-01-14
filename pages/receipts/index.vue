@@ -10,9 +10,23 @@
       >
         <b-tab-item label="Pending Payments">
           <unreceipted-debits-table
-            @create-policy="$router.push({ path: '/policies' })"
+            @create-policy="
+              $router.push({ path: '/policies', query: { activeTab: 0 } })
+            "
           ></unreceipted-debits-table>
         </b-tab-item>
+        <b-tab-item label="Captured Receipts">
+          <captured-receipts-table
+            @create-policy="
+              $router.push({ path: '/policies', query: { activeTab: 0 } })
+            "
+          ></captured-receipts-table>
+        </b-tab-item>
+        <!-- <b-tab-item label="Cancelled Receipts">
+          <unreceipted-debits-table
+            @create-policy="$router.push({ path: '/policies', query: { activeTab: 0 } })"
+          ></unreceipted-debits-table>
+        </b-tab-item> -->
       </b-tabs>
     </div>
   </div>
