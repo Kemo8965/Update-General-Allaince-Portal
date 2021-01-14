@@ -739,6 +739,7 @@ import { mapActions, mapGetters } from 'vuex'
 import { DateTime } from 'luxon'
 import currency from 'currency.js'
 import { VMoney } from 'v-money'
+import PayDebitModal from '@/components/modals/pay-debit-modal'
 
 import {
   alpha,
@@ -2145,11 +2146,37 @@ export default {
           },
         })
 
-        this.$buefy.toast.open({
-          duration: 5000,
-          message: `Quote submitted!`,
-          position: 'is-top',
+        this.$buefy.dialog.prompt({
+          title: 'Make Payment',
+          message: `Policy submitted! Would you like to make the payment now?`,
+          confirmText: 'Yes',
+          cancelText: 'Other Pending Payments',
           type: 'is-success',
+          hasIcon: true,
+          onConfirm: () => {
+            setTimeout(() => {
+              this.$buefy.modal.open({
+                parent: this,
+                component: PayDebitModal,
+                hasModalCard: true,
+                trapFocus: true,
+                canCancel: ['x'],
+                destroyOnHide: true,
+                customClass: '',
+                onCancel: () => {
+                  this.$buefy.toast.open({
+                    message: `Payment cancelled...`,
+                    duration: 5000,
+                    position: 'is-top',
+                    type: 'is-info',
+                  })
+                },
+              })
+            }, 300)
+          },
+          onCancel: () => {
+            this.$router.push({ path: '/receipts', query: { activeTab: 1 } })
+          },
         })
 
         this.$router.push({ path: '/' })

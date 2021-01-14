@@ -61,11 +61,21 @@
       <b-table-column
         v-slot="props"
         field="nameOfInsured"
-        label="Name of Insured"
+        label="Client"
         sortable
         searchable
       >
         {{ props.row.nameOfInsured }}
+      </b-table-column>
+
+      <b-table-column
+        v-slot="props"
+        field="netPremium"
+        label="Net Premium"
+        sortable
+        searchable
+      >
+        {{ currencyValue(props.row, 'netPremium') }}
       </b-table-column>
 
       <b-table-column
@@ -92,10 +102,13 @@
         <span class="tag is-warning">{{ props.row.receiptStatus }}</span>
       </b-table-column>
 
-      <b-table-column label="Options">
+      <b-table-column v-slot="props" label="Options">
         <span class="buttons">
           <!-- <b-button type="is-secondary-outline" icon-left="eye">View</b-button> -->
-          <b-button type="is-secondary-outline" icon-left="cash-multiple"
+          <b-button
+            type="is-secondary-outline"
+            icon-left="cash-multiple"
+            @click="captureReceipt(props.row)"
             >Capture Receipt</b-button
           >
         </span>
@@ -106,6 +119,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import PayDebitModal from '@/components/modals/pay-debit-modal'
 
 export default {
   name: 'UnreceiptedDebitsTable',
@@ -140,10 +154,44 @@ export default {
 
   async created() {
     await this.load()
+    this.selectPolicy(this.policies[0])
   },
 
   methods: {
-    ...mapActions('policies', ['load']),
+    ...mapActions('policies', ['load', 'selectPolicy']),
+
+    currencyValue(policy, field) {
+      switch (policy.currency) {
+        case 'USD':
+          return this.$options.filters.currency_usd(policy[field])
+
+        default:
+          return this.$options.filters.currency(policy[field])
+      }
+    },
+
+    captureReceipt(policy) {
+      this.selectPolicy(policy)
+      setTimeout(() => {
+        this.$buefy.modal.open({
+          parent: this,
+          component: PayDebitModal,
+          hasModalCard: true,
+          trapFocus: true,
+          canCancel: ['x'],
+          destroyOnHide: true,
+          customClass: '',
+          onCancel: () => {
+            this.$buefy.toast.open({
+              message: `Payment cancelled!`,
+              duration: 5000,
+              position: 'is-top',
+              type: 'is-info',
+            })
+          },
+        })
+      }, 300)
+    },
   },
 }
 </script>

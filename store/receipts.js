@@ -331,7 +331,7 @@ export const actions = {
       //   allocationPolicy
       // )
 
-      await dispatch('policies/updatePolicy', null, { root: true })
+      // await dispatch('policies/updatePolicy', null, { root: true })
 
       await dispatch('transactions/load', null, { root: true })
 
@@ -374,6 +374,7 @@ export const actions = {
       }
 
       await dispatch('transactions/createTransaction', trans, { root: true })
+      await dispatch('transactions/load', null, { root: true })
       commit(SET_LOADING, false)
     } catch (error) {
       commit(SET_LOADING, false)

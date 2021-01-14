@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="columns mt-5">
+    <div class="columns mt-6 px-4">
       <div class="column">
         <h2 class="title is-size-2">Available Actions</h2>
         <div class="box">

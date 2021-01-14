@@ -4,6 +4,7 @@ import {
   SET_SELECTED_POLICY,
   SET_SELECTED_DEBIT_NOTE,
   SET_SELECTED_CERTIFICATE,
+  ACTIVATE_POLICY,
 } from '@/helpers/mutation-types'
 import { http, branchNumber } from '@/helpers/axios-instance'
 import { DateTime } from 'luxon'
@@ -80,9 +81,14 @@ export const mutations = {
     state.selectedCertificate = payload
   },
 
-  updatePolicy(state) {
+  [ACTIVATE_POLICY](state) {
+    state.selectedPolicy.status = 'Active'
     state.selectedPolicy.receiptStatus = 'Receipted'
     state.selectedPolicy.paymentPlan = 'Created'
+    const index = state.all.findIndex(
+      ({ id }) => id === state.selectedPolicy.id
+    )
+    state.all.splice(index, 1, state.selectedPolicy)
   },
 }
 
@@ -338,10 +344,10 @@ export const actions = {
     }
   },
 
-  async updatePolicy({ commit, state }) {
+  async activatePolicy({ commit, state }) {
     try {
       commit(SET_LOADING, true)
-      commit('updatePolicy')
+      commit(ACTIVATE_POLICY)
       await http.put(`/policy/${state.selectedPolicy.id}`, state.selectedPolicy)
       commit(SET_LOADING, false)
     } catch (error) {

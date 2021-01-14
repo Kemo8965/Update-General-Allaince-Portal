@@ -10,10 +10,11 @@ export const actions = {
         setTimeout(() => {
           resolve({ ...params, id: Date.now() })
           reject(new Error('Promise error!'))
-        }, 1500)
+        }, 3000)
       })
     } catch ({ message }) {
       console.error(message)
+      throw error
     }
   },
 }

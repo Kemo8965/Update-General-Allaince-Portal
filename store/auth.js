@@ -72,7 +72,8 @@ export const actions = {
         dispatch('logOut')
       } else {
         // Do something with the authUser and the claims object...
-        // dispatch('users/cacheUser', authUser, { root: true })
+        dispatch('users/load', null, { root: true })
+        dispatch('users/cacheUser', authUser, { root: true })
 
         if (getters.loggedIn) {
           return

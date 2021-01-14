@@ -1,11 +1,11 @@
 <template>
-  <div class="grid">
-    <div class="content-area mt-4 p-4"></div>
+  <div class="columns">
+    <div class="column mt-6 px-6"></div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+// import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'Starter',
@@ -17,7 +17,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(),
+    // ...mapGetters(),
   },
 
   // async created() {
@@ -25,7 +25,7 @@ export default {
   // },
 
   methods: {
-    ...mapActions(),
+    // ...mapActions(),
   },
 }
 </script>
