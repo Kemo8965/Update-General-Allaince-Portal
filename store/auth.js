@@ -73,7 +73,6 @@ export const actions = {
       } else {
         // Do something with the authUser and the claims object...
         dispatch('users/load', null, { root: true })
-        dispatch('users/cacheUser', authUser, { root: true })
 
         if (getters.loggedIn) {
           return
@@ -90,6 +89,8 @@ export const actions = {
           email: authUser.email,
           ...profile,
         }
+
+        dispatch('users/cacheUser', user, { root: true })
 
         // Load other stores
         // External services
