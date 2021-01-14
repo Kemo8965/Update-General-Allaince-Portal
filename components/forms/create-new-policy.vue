@@ -2119,14 +2119,14 @@ export default {
         if (this.$v.quotation.$error)
           throw new Error('Please check for errors in the form')
 
-        await this.$buefy.dialog.prompt({
+        await this.$buefy.dialog.confirm({
           title: 'Create Policy',
           message:
             'Are you sure you want to create a policy? Please ensure you have entered the <b>correct</b> information.',
           confirmText: 'Yes',
           type: 'is-warning',
           hasIcon: true,
-          trapFocus: true,
+          focusOn: 'confirm',
           closeOnConfirm: false,
           onConfirm: async (value, { close }) => {
             this.$buefy.toast.open(`Creating policy, please wait...`)
@@ -2142,44 +2142,45 @@ export default {
             // Make payment
             this.selectPolicy(policy)
 
+            this.$buefy.dialog.confirm({
+              title: 'Make Payment',
+              message: `Policy submitted! Would you like to make the payment now?`,
+              confirmText: 'Yes',
+              cancelText: 'Other Pending Payments',
+              type: 'is-success',
+              hasIcon: true,
+              onConfirm: () => {
+                setTimeout(() => {
+                  this.$buefy.modal.open({
+                    parent: this,
+                    component: PayDebitModal,
+                    hasModalCard: true,
+                    focusOn: 'confirm',
+                    canCancel: ['x'],
+                    destroyOnHide: true,
+                    customClass: '',
+                    onCancel: () => {
+                      this.$buefy.toast.open({
+                        message: `Payment cancelled...`,
+                        duration: 5000,
+                        position: 'is-top',
+                        type: 'is-info',
+                      })
+                    },
+                  })
+                }, 300)
+              },
+              onCancel: () => {
+                this.$router.push({
+                  path: '/receipts',
+                  query: { activeTab: 1 },
+                })
+              },
+            })
+
             close()
           },
         })
-
-        this.$buefy.dialog.prompt({
-          title: 'Make Payment',
-          message: `Policy submitted! Would you like to make the payment now?`,
-          confirmText: 'Yes',
-          cancelText: 'Other Pending Payments',
-          type: 'is-success',
-          hasIcon: true,
-          onConfirm: () => {
-            setTimeout(() => {
-              this.$buefy.modal.open({
-                parent: this,
-                component: PayDebitModal,
-                hasModalCard: true,
-                trapFocus: true,
-                canCancel: ['x'],
-                destroyOnHide: true,
-                customClass: '',
-                onCancel: () => {
-                  this.$buefy.toast.open({
-                    message: `Payment cancelled...`,
-                    duration: 5000,
-                    position: 'is-top',
-                    type: 'is-info',
-                  })
-                },
-              })
-            }, 300)
-          },
-          onCancel: () => {
-            this.$router.push({ path: '/receipts', query: { activeTab: 1 } })
-          },
-        })
-
-        this.$router.push({ path: '/' })
       } catch (error) {
         const msg = error.response ? error.response.data.message : error.message
         this.$buefy.toast.open({
