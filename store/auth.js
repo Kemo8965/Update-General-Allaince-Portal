@@ -90,6 +90,12 @@ export const actions = {
           ...profile,
         }
 
+        // Load other stores
+        // External services
+        await dispatch('external-services/load', null, { root: true })
+        // Classes
+        await dispatch('classes/load', null, { root: true })
+
         commit(SET_AUTH_USER, user)
         return user
       }

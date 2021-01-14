@@ -1544,9 +1544,12 @@ export default {
   },
 
   async created() {
-    await this.loadPolicies()
     await this.loadClients()
-    await this.loadColors()
+    // await this.loadClasses()
+    // await this.loadProducts()
+    await this.loadPolicies()
+    await this.loadTransactions()
+    // await this.loadColors()
   },
 
   mounted() {
@@ -1554,11 +1557,25 @@ export default {
   },
 
   methods: {
-    ...mapActions('quotations', ['submit', 'setHighestQuarter']),
+    ...mapActions('quotations', [
+      'submit',
+      'setHighestQuarter',
+      'selectQuotation',
+    ]),
+
+    ...mapActions('transactions', { loadTransactions: 'load' }),
+
+    // ...mapActions('classes', { loadClasses: 'load' }),
+
+    // ...mapActions('products', { loadProducts: 'load' }),
 
     ...mapActions('helpers', ['setCurrency']),
 
-    ...mapActions('policies', { loadPolicies: 'load' }),
+    ...mapActions('policies', {
+      loadPolicies: 'load',
+      createPolicy: 'createPolicy',
+      selectPolicy: 'load',
+    }),
 
     ...mapActions('clients', { loadClients: 'load' }),
 
@@ -1569,7 +1586,7 @@ export default {
     }),
 
     ...mapActions('external-services', {
-      loadColors: 'load',
+      // loadColors: 'load',
       addColor: 'addColor',
     }),
 
@@ -2101,7 +2118,32 @@ export default {
         if (this.$v.quotation.$error)
           throw new Error('Please check for errors in the form')
 
-        await this.submit(this.quotation)
+        await this.$buefy.dialog.prompt({
+          title: 'Create Policy',
+          message:
+            'Are you sure you want to create a policy? Please ensure you have entered the <b>correct</b> information.',
+          confirmText: 'Yes',
+          type: 'is-warning',
+          hasIcon: true,
+          trapFocus: true,
+          closeOnConfirm: false,
+          onConfirm: async (value, { close }) => {
+            this.$buefy.toast.open(`Creating policy, please wait...`)
+            // submit quote
+            const quote = await this.submit(this.quotation)
+
+            // Select quote
+            this.selectQuotation(quote)
+
+            // Create policy
+            const policy = await this.createPolicy()
+
+            // Make payment
+            this.selectPolicy(policy)
+
+            close()
+          },
+        })
 
         this.$buefy.toast.open({
           duration: 5000,
@@ -2200,6 +2242,21 @@ export default {
       this.selectedExtension = null
       this.extensionType = null
       this.extensionAmount = null
+    },
+
+    reloadComponent() {
+      this.quotation = {
+        clientCode: null,
+        startDate: null,
+        endDate: null,
+        currency: null,
+        quarter: null,
+        risks: [],
+      }
+      this.clientName = ''
+      this.onRiskReset()
+      this.color = ''
+      this.$v.$reset()
     },
 
     onDiscountReset() {

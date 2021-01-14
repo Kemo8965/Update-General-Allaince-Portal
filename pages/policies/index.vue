@@ -3,10 +3,12 @@
     <div class="column mt-6 px-6">
       <b-tabs v-model="activeTab" vertical position="is-left" type="is-toggle">
         <b-tab-item label="Create New Policy">
-          <create-new-policy></create-new-policy>
+          <create-new-policy ref="createPolicy"></create-new-policy>
         </b-tab-item>
         <b-tab-item label="Pending Payments">
-          <quotations-table></quotations-table>
+          <unreceipted-debits-table
+            @create-policy="createPolicyTab"
+          ></unreceipted-debits-table>
         </b-tab-item>
       </b-tabs>
     </div>
@@ -14,7 +16,7 @@
 </template>
 
 <script>
-// import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'ManagePolicies',
@@ -31,12 +33,17 @@ export default {
     // ...mapGetters(),
   },
 
-  // async created() {
-  //   await this.load()
-  // },
+  async created() {
+    await this.load()
+  },
 
   methods: {
-    // ...mapActions(),
+    ...mapActions('policies', ['load']),
+
+    createPolicyTab() {
+      this.$refs.createPolicy.$mount().reloadComponent()
+      this.activeTab = 0
+    },
   },
 }
 </script>

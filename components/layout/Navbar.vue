@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-navbar spaced shadow>
+    <b-navbar centered spaced shadow>
       <template v-slot:brand>
         <nuxt-link :to="{ path: '/' }">
           <img
@@ -17,23 +17,36 @@
         >
           General Alliance Insurance
         </b-navbar-item>
+        <b-navbar-item
+          v-for="({ items }, index) in menuList"
+          :key="index"
+          class="is-hidden-desktop"
+          tag="div"
+        >
+          <b-navbar-item
+            v-for="({ itemLabel, link }, key) in items"
+            :key="key"
+            :to="link"
+            tag="router-link"
+            >{{ itemLabel }}</b-navbar-item
+          >
+        </b-navbar-item>
       </template>
 
       <template v-if="loggedIn" v-slot:end>
-        <b-navbar-item tag="div">
-          <div class="buttons">
-            <!-- <b-button type="is-primary" @click="endSession">
-              <strong>Log out</strong>
-            </b-button> -->
-            <b-button icon-left="menu" @click="sidebar = !sidebar"
-              >Menu</b-button
-            >
-          </div>
+        <b-navbar-item tag="div" class="is-hidden-mobile">
+          <b-button icon-left="menu" @click="sidebar = !sidebar"></b-button>
         </b-navbar-item>
       </template>
     </b-navbar>
 
-    <b-sidebar v-model="sidebar" type="is-light" fullheight overlay>
+    <b-sidebar
+      v-model="sidebar"
+      class="is-hidden-mobile"
+      type="is-light"
+      fullheight
+      overlay
+    >
       <b-menu class="menu" :activable="false">
         <b-menu-list
           v-for="({ label, items }, index) in menuList"

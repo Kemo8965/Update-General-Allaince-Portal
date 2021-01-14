@@ -171,26 +171,27 @@ export const actions = {
         { root: true }
       )
 
-      // await http.post(`/quotation/${quotation.class.id}`, quotation)
+      await http.post(`/quotation/${quotation.class.id}`, quotation)
 
       // Load quotations after posting
       await dispatch('load')
 
       // Get necessary quotation
-      // const submittedQuote = await dispatch(
-      //   'quotationByQuoteNumber',
-      //   quotation.quoteNumber
-      // )
+      const submittedQuote = await dispatch(
+        'quotationByQuoteNumber',
+        quotation.quoteNumber
+      )
 
-      // asyncForEach(submittedQuote.risks, async (risk, index) => {
-      //   await http.post(
-      //     `/vehicle-details/${risk.id}`,
-      //     quotation.risks[index].vehicle
-      //   )
-      // })
-      console.info('Quotation submitted:', JSON.stringify(quotation))
+      asyncForEach(submittedQuote.risks, async (risk, index) => {
+        await http.post(
+          `/vehicle-details/${risk.id}`,
+          quotation.risks[index].vehicle
+        )
+      })
+      // console.info('Quotation submitted:', JSON.stringify(quotation))
 
       commit(SET_LOADING, false)
+      return submittedQuote
     } catch (error) {
       commit(SET_LOADING, false)
       throw error
@@ -215,7 +216,7 @@ export const actions = {
     try {
       commit(SET_LOADING, true)
       commit(APPROVE_QUOTATION)
-      // TODO: Switch to live API
+
       const { data } = await http.put(
         `/quotation/${state.selectedQuotation.id}`,
         state.selectedQuotation
@@ -244,8 +245,8 @@ export const actions = {
     commit(SET_HIGHEST_QUARTER, quarter)
   },
 
-  selectQuotation({ commit }, quotationId) {
-    commit(SET_SELECTED_QUOTATION, quotationId)
+  selectQuotation({ commit }, quotation) {
+    commit(SET_SELECTED_QUOTATION, quotation)
   },
 
   quotationByQuoteNumber({ state }, quoteNumber) {
@@ -297,8 +298,8 @@ function onStartDateChange(date, state) {
   }
 }
 
-// async function asyncForEach(array, callback) {
-//   for (let index = 0; index < array.length; index++) {
-//     await callback(array[index], index, array)
-//   }
-// }
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array)
+  }
+}

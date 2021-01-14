@@ -14,7 +14,12 @@
       <b-button class="mr-3" icon-left="refresh" @click="load"
         >Refresh</b-button
       >
-      <b-button icon-left="plus" type="is-primary">Create New Policy</b-button>
+      <b-button
+        icon-left="plus"
+        type="is-primary"
+        @click="$emit('create-policy')"
+        >Create New Policy</b-button
+      >
     </b-field>
     <b-table
       :data="tableData"
@@ -25,7 +30,7 @@
       :pagination-position="paginationPosition"
       :default-sort-direction="defaultSortDirection"
       mobile-cards
-      default-sort="quoteNumber"
+      default-sort="policyNumber"
       aria-next-label="Next Page"
       aria-previous-label="Previous Page"
       aria-page-label="Page"
@@ -33,11 +38,11 @@
     >
       <b-table-column
         v-slot="props"
-        field="quoteNumber"
+        field="policyNumber"
         label="Policy ID"
         sortable
       >
-        {{ props.row.quoteNumber }}
+        {{ props.row.policyNumber }}
       </b-table-column>
 
       <b-table-column
@@ -55,12 +60,12 @@
 
       <b-table-column
         v-slot="props"
-        field="client"
-        label="Client Name"
+        field="nameOfInsured"
+        label="Name of Insured"
         sortable
         searchable
       >
-        {{ props.row.client }}
+        {{ props.row.nameOfInsured }}
       </b-table-column>
 
       <b-table-column
@@ -73,19 +78,23 @@
           :class="[
             'tag',
             {
-              'is-success': props.row.status === 'Approved',
+              'is-success': props.row.status === 'Active',
             },
             {
-              'is-warning': props.row.status === 'Draft',
+              'is-warning': props.row.status === 'Inactive',
             },
           ]"
           >{{ props.row.status }}</span
         >
       </b-table-column>
 
+      <b-table-column v-slot="props" field="status" label="Status" sortable>
+        <span class="tag is-warning">{{ props.row.receiptStatus }}</span>
+      </b-table-column>
+
       <b-table-column label="Options">
         <span class="buttons">
-          <b-button type="is-secondary-outline" icon-left="eye">View</b-button>
+          <!-- <b-button type="is-secondary-outline" icon-left="eye">View</b-button> -->
           <b-button type="is-secondary-outline" icon-left="cash-multiple"
             >Capture Receipt</b-button
           >
@@ -99,7 +108,7 @@
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
-  name: 'QuotationsTable',
+  name: 'UnreceiptedDebitsTable',
 
   data() {
     return {
@@ -115,17 +124,17 @@ export default {
   },
 
   computed: {
-    ...mapGetters('quotations', {
+    ...mapGetters('policies', {
       loading: 'loading',
-      quotes: 'quotations',
+      policies: 'unreceiptedPolicies',
     }),
 
     isEmpty() {
-      return this.quotes.length === 0
+      return this.policies.length === 0
     },
 
     tableData() {
-      return this.isEmpty ? [] : this.quotes
+      return this.isEmpty ? [] : this.policies
     },
   },
 
@@ -134,7 +143,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('quotations', ['load']),
+    ...mapActions('policies', ['load']),
   },
 }
 </script>

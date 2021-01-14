@@ -2,11 +2,9 @@
 import { DateTime } from 'luxon'
 import currency from 'currency.js'
 import { SET_LOADING, SET_SELECTED_RISK } from '@/helpers/mutation-types'
-import { cloneDeep } from 'lodash'
 // const branchNumber = 1
 
 export const state = () => ({
-  risks: [],
   selectedRisk: null,
   selectedBasicPremiumType: null,
   loading: false,
@@ -29,10 +27,6 @@ export const state = () => ({
 })
 
 export const getters = {
-  risks(state) {
-    return cloneDeep(state.risks)
-  },
-
   selectedRisk(state) {
     return state.selectedRisk
   },
@@ -63,18 +57,6 @@ export const getters = {
 }
 
 export const mutations = {
-  PUSH_RISK(state, risk) {
-    state.risks.push(risk)
-  },
-
-  DELETE_RISK(state, index) {
-    state.risks.splice(index, 1)
-  },
-
-  EMPTY_RISKS(state) {
-    state.risks = []
-  },
-
   [SET_SELECTED_RISK](state, payload) {
     state.selectedRisk = payload
   },
@@ -235,18 +217,6 @@ export const actions = {
       commit(SET_LOADING, false)
       throw error
     }
-  },
-
-  addRisk({ commit }, risk) {
-    commit('PUSH_RISK', risk)
-  },
-
-  deleteRisk({ commit }, index) {
-    commit('DELETE_RISK', index)
-  },
-
-  refreshRisks({ commit }) {
-    commit('EMPTY_RISKS')
   },
 
   selectRisk({ commit }, risk) {

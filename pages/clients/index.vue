@@ -1,7 +1,7 @@
 <template>
-  <div class="grid">
-    <div class="content-area mt-4 p-4">
-      <b-tabs v-model="activeTab" position="is-left" type="is-toggle">
+  <div class="columns">
+    <div class="column mt-6 px-6">
+      <b-tabs v-model="activeTab" vertical position="is-left" type="is-toggle">
         <b-tab-item label="Individual Clients">
           <individual-clients-table></individual-clients-table>
         </b-tab-item>

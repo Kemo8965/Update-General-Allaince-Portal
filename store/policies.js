@@ -135,7 +135,7 @@ export const actions = {
         dateOfIssue: DateTime.local().toISO(),
         expiryDate: quote.endDate,
         timeOfIssue: DateTime.local().toISO(),
-        status: 'Active',
+        status: 'Inactive',
         receiptStatus: 'Unreceipted',
         risks: quote.risks,
         sumInsured: sumArray(quote.risks, 'sumInsured'),
@@ -174,7 +174,6 @@ export const actions = {
       }
 
       // Create policy
-      // TODO: Switch to live API
       const { data: policyRes } = await http.post(
         `/policy/${quote.class.id}`,
         policy
@@ -188,12 +187,11 @@ export const actions = {
 
       // console.info('policyRes:', policyRes)
 
-      // TODO: Enable policy ID
       const policyId = policyRes.id
       const policyRisks = policyRes.risks
 
       // Post cover notes
-      await asyncForEach(policyRisks, async (risk, index) => {
+      await asyncForEach(policyRisks, async (risk) => {
         const certificateNumRes = await fetch(
           `${process.env.NUXT_ENV_NUMBER_GEN_API_URL}/savenda-certificate-number`
         )
@@ -207,11 +205,10 @@ export const actions = {
         const { data } = await certificateNumRes.json()
 
         coverNote.certificateNumber = data.certificate_number
-        // TODO: Switch to Id for live
+
         coverNote.policyId = risk.id
         // coverNote.policyId = Date.now()
 
-        // TODO: Switch to API call
         // const { data: coverNoteRes } =
         await http.post(`documents/cover-note`, coverNote)
         // const coverNoteRes = await new Promise((resolve, reject) => {
@@ -239,7 +236,6 @@ export const actions = {
 
       debitNote.debitNoteNumber = invoiceNumberRes.invoice_number
 
-      // TODO: Switch to live API
       const { data: debitNoteRes } = await http.post(
         `documents/debit-note/${policyId}`,
         debitNote
@@ -297,8 +293,22 @@ export const actions = {
 
       // console.info('transactionRes:', transactionRes)
 
+      commit(SET_LOADING, false)
+
+      return policy
+    } catch (error) {
+      commit(SET_LOADING, false)
+      throw error
+    }
+  },
+
+  async postPolicyToRtsa({ state, commit, dispatch }) {
+    try {
+      commit(SET_LOADING, true)
+      const policy = state.selectedPolicy
+
       // Post risks to RTSA
-      asyncForEach(policy.risks, async (risk) => {
+      await asyncForEach(policy.risks, async (risk) => {
         const params = {
           status: 1,
           registrationMark: risk.vehicle.regNumber.replace(/\s/g, ''),
@@ -320,10 +330,10 @@ export const actions = {
 
         // console.info('rtsaRes:', rtsaRes)
       })
-
       commit(SET_LOADING, false)
     } catch (error) {
       commit(SET_LOADING, false)
+      console.error(error.message)
       throw error
     }
   },
