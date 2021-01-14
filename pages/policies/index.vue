@@ -1,6 +1,6 @@
 <template>
   <div class="columns">
-    <div class="column mt-6">
+    <div class="column mt-6 px-6">
       <b-tabs v-model="activeTab" vertical position="is-left" type="is-toggle">
         <b-tab-item label="Create New Policy">
           <create-new-policy></create-new-policy>

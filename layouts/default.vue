@@ -33,7 +33,8 @@ body {
 
 .app-content {
   flex-grow: 1;
-  padding: 0 5rem;
+
+  /* padding: 0 5rem; */
 }
 
 .full-height {

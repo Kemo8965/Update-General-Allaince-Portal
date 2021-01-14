@@ -85,7 +85,7 @@
             v-if="viewRisks"
             type="is-secondary-outline"
             icon-left="eye"
-            @click="viewRisk(props)"
+            @click="viewRisk(props.row)"
             >View</b-button
           >
           <b-button
@@ -98,7 +98,7 @@
           <b-button
             v-if="deleteRisks"
             type="is-danger"
-            icon-left="trash"
+            icon-left="trash-can"
             @click="$emit('risk-deleted', props.index)"
           ></b-button>
         </span>
@@ -186,9 +186,9 @@ export default {
     },
 
     viewRisk(risk) {
+      console.info(risk)
       this.selectRisk(risk)
       this.riskSelected = true
-      console.info(risk)
       // setTimeout(() => {
       //   this.$refs.risk.$mount()
       // }, 300)
@@ -207,14 +207,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
-}
-
-.content-area {
-  grid-column: 2/3;
-}
-</style>

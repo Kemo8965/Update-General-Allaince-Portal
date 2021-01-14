@@ -112,8 +112,7 @@
     </div>
 
     <!-- Risk Details -->
-    <!-- <div v-if="quotation.quarter" class="card"> -->
-    <div class="card">
+    <div v-if="quotation.quarter" class="card">
       <div class="card-header">
         <h4 class="card-header-title is-4">Vehicle Details</h4>
         <span class="card-header-icon">
@@ -121,8 +120,7 @@
         </span>
       </div>
     </div>
-    <!-- <div v-if="quotation.quarter" class="mt-4 box"> -->
-    <div class="mt-4 box">
+    <div v-if="quotation.quarter" class="mt-4 box">
       <b-button
         v-if="!addRisk && quotation.quarter"
         type="is-primary"
@@ -220,7 +218,7 @@
               placeholder="Pearl"
               open-on-focus
               clearable
-              icon="paint"
+              icon="palette"
               :data="filteredColors"
               :disabled="!$v.risk.vehicle.chassisNumber.$dirty"
               @select="colorSelected"
@@ -268,6 +266,7 @@
               Body Type <span class="has-text-danger">*</span>
             </template>
             <b-select
+              v-model="$v.risk.vehicle.bodyType.$model"
               placeholder="-- Please select a body type --"
               :disabled="!$v.risk.vehicle.seatingCapacity.$dirty"
             >
@@ -286,14 +285,14 @@
         <h4 class="title is-4 mt-4">Computations</h4>
         <b-field grouped group-multiline>
           <!-- Sum Insured -->
-          <b-field label="Sum Insured">
+          <b-field label="Sum Insured" :type="sumInsuredState">
             <!-- <b-field label="Sum Insured" exapanded> -->
             <p class="control">
               <span class="button is-static">{{ quotation.currency }}</span>
             </p>
+            <!-- v-money="money" -->
             <b-input
               v-model="$v.risk.sumInsured.$model"
-              v-money="money"
               placeholder="Sum insured"
               expanded
             ></b-input>
@@ -305,7 +304,7 @@
           </b-field>
 
           <!-- Product Type -->
-          <b-field expanded>
+          <b-field expanded :type="productTypeState">
             <template v-slot:label>
               Class of Vehicle <span class="has-text-danger">*</span>
             </template>
@@ -328,7 +327,7 @@
 
         <b-field grouped group-multiline>
           <!-- Risk Start date -->
-          <b-field class="mt-4" expanded>
+          <b-field class="mt-4" expanded :type="riskStartDateState">
             <template v-slot:label>
               Risk Start Date <span class="has-text-danger">*</span>
             </template>
@@ -337,13 +336,14 @@
               placeholder="-- Please select start date --"
               icon="calendar-blank-outline"
               :min-date="minDate"
+              :disabled="!$v.risk.productType.$dirty"
               mobile-native
               @input="onRiskStartDateChange"
             ></b-datepicker>
           </b-field>
 
           <!-- Risk Quarters -->
-          <b-field class="mt-4" expanded>
+          <b-field class="mt-4" expanded :type="riskQuarterState">
             <template v-slot:label>
               Risk Quarters <span class="has-text-danger">*</span>
             </template>
@@ -351,6 +351,7 @@
               v-model="$v.risk.riskQuarter.$model"
               placeholder="-- Please select a quarter --"
               expanded
+              :disabled="!$v.risk.riskStartDate.$dirty"
               @input="onRiskQuarterChange"
             >
               <option
@@ -423,15 +424,19 @@
         </b-field>
 
         <!-- Discount Form -->
-        <!-- <form v-if="selectedDiscount" @submit.prevent="onDiscountSubmit"> -->
         <form
-          id="discount-form"
+          v-if="selectedDiscount"
           class="mt-5"
           @submit.prevent="onDiscountSubmit"
         >
+          <!-- <form
+          id="discount-form"
+          class="mt-5"
+          @submit.prevent="onDiscountSubmit"
+        > -->
           <b-field grouped group-multiline>
             <!-- Discount Type -->
-            <b-field label="Discount Type">
+            <b-field label="Discount Type" :type="discountTypeState">
               <b-select
                 v-model="discountType"
                 placeholder="-- Please select a discount type --"
@@ -447,12 +452,13 @@
             </b-field>
 
             <!-- Discount Rate -->
-            <b-field v-if="discountType === 'Rate'" label="Discount Rate">
-              <b-input
-                v-model="discountRate"
-                v-money="money"
-                expanded
-              ></b-input>
+            <b-field
+              v-if="discountType === 'Rate'"
+              label="Discount Rate"
+              :type="discountRateState"
+            >
+              <!-- v-money="money" -->
+              <b-input v-model="discountRate" expanded></b-input>
               <p class="control">
                 <span class="button is-static">%</span>
               </p>
@@ -466,15 +472,16 @@
             </b-field>
 
             <!-- Discount Amount -->
-            <b-field v-if="discountType === 'Amount'" label="Discount Amount">
+            <b-field
+              v-if="discountType === 'Amount'"
+              label="Discount Amount"
+              :type="discountAmountState"
+            >
               <p class="control">
                 <span class="button is-static">{{ quotation.currency }}</span>
               </p>
-              <b-input
-                v-model="discountAmount"
-                v-money="money"
-                expanded
-              ></b-input>
+              <!-- v-money="money" -->
+              <b-input v-model="discountAmount" expanded></b-input>
               <p class="control">
                 <b-button
                   type="is-primary"
@@ -488,7 +495,7 @@
 
         <!-- Limits of Liability -->
         <h5 class="title is-5 mt-6">Limits of Liability</h5>
-        <b-field>
+        <b-field :type="liabilityTypeState">
           <template v-slot:label>
             Liability Type <span class="has-text-danger">*</span>
           </template>
@@ -509,7 +516,10 @@
         <div v-if="liabilityType === 'Standard'">
           <b-field class="mt-5" grouped group-multiline>
             <!-- Death and Injury Per Person -->
-            <b-field label="Death and Injury Per Person">
+            <b-field
+              label="Death and Injury Per Person"
+              :type="deathAndInjuryPerPersonState"
+            >
               <b-numberinput
                 v-model="$v.deathAndInjuryPerPerson.$model"
                 step=".01"
@@ -519,7 +529,7 @@
             </b-field>
 
             <!-- Rate -->
-            <b-field label="Rate">
+            <b-field label="Rate" :type="deathAndInjuryPerPersonRateState">
               <b-numberinput
                 v-model="$v.deathAndInjuryPerPersonRate.$model"
                 step=".01"
@@ -545,7 +555,10 @@
 
           <b-field class="mt-5" grouped group-multiline>
             <!-- Death and Injury Per Event -->
-            <b-field label="Death and Injury Per Event">
+            <b-field
+              label="Death and Injury Per Event"
+              :type="deathAndInjuryPerEventState"
+            >
               <b-numberinput
                 v-model="$v.deathAndInjuryPerEvent.$model"
                 step=".01"
@@ -555,7 +568,7 @@
             </b-field>
 
             <!-- Rate -->
-            <b-field label="Rate">
+            <b-field label="Rate" :type="deathAndInjuryPerEventRateState">
               <b-numberinput
                 v-model="$v.deathAndInjuryPerEventRate.$model"
                 step=".01"
@@ -581,7 +594,7 @@
 
           <b-field class="mt-5" grouped group-multiline>
             <!-- Property Damage-->
-            <b-field label="Property Damage">
+            <b-field label="Property Damage" :type="propertyDamageState">
               <b-numberinput
                 v-model="$v.propertyDamage.$model"
                 step=".01"
@@ -591,7 +604,7 @@
             </b-field>
 
             <!-- Rate -->
-            <b-field label="Rate">
+            <b-field label="Rate" :type="propertyDamageRateState">
               <b-numberinput
                 v-model="$v.propertyDamageRate.$model"
                 step=".01"
@@ -623,7 +636,7 @@
           group-multiline
         >
           <!-- Combined Limit -->
-          <b-field label="Third Party Combined Limit">
+          <b-field label="Third Party Combined Limit" :type="combLimState">
             <b-numberinput
               v-model="$v.combinedLimits.$model"
               step=".01"
@@ -633,7 +646,7 @@
           </b-field>
 
           <!-- Rate -->
-          <b-field label="Rate">
+          <b-field label="Rate" :type="combLimRateState">
             <b-numberinput
               v-model="$v.combinedLimitsRate.$model"
               step=".01"
@@ -657,8 +670,8 @@
           </b-field>
         </b-field>
 
-        <!-- <div v-if="risk.numberOfDays" class="py-1"> -->
-        <div class="py-1">
+        <div v-if="risk.numberOfDays" class="py-1">
+          <!-- <div class="py-1"> -->
           <h4 class="title is-4 mt-4">Totals</h4>
           <b-field grouped group-multiline>
             <b-field
@@ -704,12 +717,19 @@
         v-if="quotation.risks.length > 0"
         class="mt-4"
         :risks="quotation.risks"
-        view-risks
-        edit-risks
         delete-risks
-        view-certificates
         @risk-deleted="onRiskDeleted"
       ></risks-table>
+
+      <div v-if="submitQuote" class="mt-6 buttons">
+        <b-button
+          icon-left="upload"
+          type="is-primary"
+          native-type="submit"
+          expanded
+          >Submit Policy</b-button
+        >
+      </div>
     </div>
   </form>
 </template>
@@ -726,6 +746,7 @@ import {
   and,
   decimal,
   helpers,
+  maxValue,
   minValue,
   numeric,
   or,
@@ -738,7 +759,7 @@ const alphaSym = helpers.regex('alphaSym', /^[a-zA-z0-9\-_\s]+/i)
 const decimalOrNum = or(decimal, numeric)
 const yearOfManLength = helpers.regex('yearOfManLength', /^\d{4}$/)
 const seatingCapLength = helpers.regex('seatingCapLength', /^\d{1,2}$/)
-const cubicCapLength = helpers.regex('cubicCapLength', /^\d{4}$/)
+const cubicCapLength = helpers.regex('cubicCapLength', /^\d{3,4}$/)
 
 export default {
   name: 'CreatePolicy',
@@ -768,6 +789,7 @@ export default {
       valueTypeOptions: ['Rate', 'Amount'],
 
       // Quotations
+      submitQuote: false,
       quotation: {
         clientCode: null,
         startDate: null,
@@ -778,7 +800,7 @@ export default {
       },
 
       // Risks
-      addRisk: true,
+      addRisk: false,
       liabilityType: null,
       // Combined Limits
       combinedLimits: null,
@@ -852,7 +874,7 @@ export default {
 
     filteredClients() {
       return this.clients.filter(({ text }) => {
-        return text.toString().toLowerCase().includes(this.clientName)
+        return text.toLowerCase().includes(this.clientName.toLowerCase())
       })
     },
 
@@ -864,6 +886,10 @@ export default {
 
     // Quotations
     ...mapGetters('quotations', ['currencies', 'quarters', 'loading']),
+
+    maxQuarter() {
+      return this.quotation.quarter
+    },
 
     // Risks
     ...mapGetters('risks', [
@@ -895,7 +921,7 @@ export default {
 
     filteredColors() {
       return this.colors.filter((color) => {
-        return color.toString().toLowerCase().includes(this.color)
+        return color.toLowerCase().includes(this.color.toLowerCase())
       })
     },
 
@@ -1057,21 +1083,18 @@ export default {
       if (this.$v.risk.vehicle.regNumber.$dirty) {
         const test = this.activePolicyRisks.some((risk) => {
           return (
-            risk.vehicle.regNumber.toLowerCase() ===
+            risk.vehicle.regNumber.replace(/\s/g, '').toLowerCase() ===
             this.$v.risk.vehicle.regNumber.$model.toLowerCase()
           )
         })
 
         if (test)
-          this.$bvToast.toast(
-            `Error: A vehicle with this registration number is already part of an active policy!`,
-            {
-              title: `Create Quote`,
-              autoHideDelay: 5000,
-              appendToast: true,
-              variant: 'danger',
-            }
-          )
+          this.$buefy.toast.open({
+            message: `Error: A vehicle with this registration number is already part of an active policy!`,
+            duration: 5000,
+            position: 'is-top',
+            type: 'is-danger',
+          })
 
         return !this.$v.risk.vehicle.regNumber.$invalid && !test
       }
@@ -1211,41 +1234,41 @@ export default {
         : null
     },
 
+    productTypeState() {
+      if (this.$v.risk.productType.$dirty) {
+        return this.validProductType ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
     validRiskStartDate() {
       return this.$v.risk.riskStartDate.$dirty
         ? !this.$v.risk.riskStartDate.$invalid
         : null
     },
 
+    riskStartDateState() {
+      if (this.$v.risk.riskStartDate.$dirty) {
+        return this.validRiskStartDate ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
     validRiskQuarter() {
       return this.$v.risk.riskQuarter.$dirty
-        ? !this.$v.risk.riskQuarter.$invalid &&
-            this.$v.risk.riskQuarter.$model <= this.quotation.quarter
-        : null
+        ? !this.$v.risk.riskQuarter.$invalid
+        : // && this.$v.risk.riskQuarter.$model <= this.quotation.quarter
+          null
     },
 
-    validRiskEndDate() {
-      return this.$v.risk.riskEndDate.$dirty
-        ? !this.$v.risk.riskEndDate.$invalid
-        : null
-    },
+    riskQuarterState() {
+      if (this.$v.risk.riskQuarter.$dirty) {
+        return this.validRiskQuarter ? 'is-success' : 'is-danger'
+      }
 
-    validRiskExpiryQuarter() {
-      return this.$v.risk.expiryQuarter.$dirty
-        ? !this.$v.risk.expiryQuarter.$invalid
-        : null
-    },
-
-    validNumberOfDays() {
-      return this.$v.risk.numberOfDays.$dirty
-        ? !this.$v.risk.numberOfDays.$invalid
-        : null
-    },
-
-    validBasicPremiumType() {
-      return this.$v.basicPremiumType.$dirty
-        ? !this.$v.basicPremiumType.$invalid
-        : null
+      return null
     },
 
     optionalSumInsured() {
@@ -1258,28 +1281,12 @@ export default {
         : null
     },
 
-    optionalPremiumRate() {
-      return this.basicPremiumType
-        ? this.basicPremiumType.includes('Rate')
-        : false
-    },
+    sumInsuredState() {
+      if (this.$v.risk.sumInsured.$dirty) {
+        return this.validSumInsured ? 'is-success' : 'is-danger'
+      }
 
-    validPremiumRate() {
-      return this.$v.risk.premiumRate.$dirty
-        ? !this.$v.risk.premiumRate.$invalid
-        : null
-    },
-
-    optionalPremiumAmount() {
-      return this.basicPremiumType
-        ? this.basicPremiumType.includes('Amount')
-        : false
-    },
-
-    validPremiumAmount() {
-      return this.$v.risk.basicPremiumAmount.$dirty
-        ? !this.$v.risk.basicPremiumAmount.$invalid
-        : null
+      return null
     },
 
     optionalDiscountType() {
@@ -1290,12 +1297,28 @@ export default {
       return this.$v.discountType.$dirty ? !this.$v.discountType.$invalid : null
     },
 
+    discountTypeState() {
+      if (this.$v.discountType.$dirty) {
+        return this.validDiscountType ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
     optionalDiscountRate() {
       return this.discountType ? this.discountType.includes('Rate') : false
     },
 
     validDiscountRate() {
       return this.$v.discountRate.$dirty ? !this.$v.discountRate.$invalid : null
+    },
+
+    discountRateState() {
+      if (this.$v.discountRate.$dirty) {
+        return this.validDiscountRate ? 'is-success' : 'is-danger'
+      }
+
+      return null
     },
 
     optionalDiscountAmount() {
@@ -1306,6 +1329,14 @@ export default {
       return this.$v.discountAmount.$dirty
         ? !this.$v.discountAmount.$invalid
         : null
+    },
+
+    discountAmountState() {
+      if (this.$v.discountAmount.$dirty) {
+        return this.validDiscountAmount ? 'is-success' : 'is-danger'
+      }
+
+      return null
     },
 
     optionalExtensionType() {
@@ -1322,36 +1353,76 @@ export default {
         : null
     },
 
+    liabilityTypeState() {
+      if (this.$v.liabilityType.$dirty) {
+        return this.validLiabilityType ? 'is-success' : 'is-danger'
+      }
+
+      return null
+    },
+
     validThirdPartyCombinedLimit() {
       return !this.$v.combinedLimits.$invalid
+    },
+
+    combLimState() {
+      return this.validThirdPartyCombinedLimit ? 'is-success' : 'is-danger'
     },
 
     validThirdPartyCombinedRate() {
       return !this.$v.combinedLimitsRate.$invalid
     },
 
+    combLimRateState() {
+      return this.validThirdPartyCombinedRate ? 'is-success' : 'is-danger'
+    },
+
     validDeathAndInjuryPerPerson() {
       return !this.$v.deathAndInjuryPerPerson.$invalid
+    },
+
+    deathAndInjuryPerPersonState() {
+      return this.validDeathAndInjuryPerPerson ? 'is-success' : 'is-danger'
     },
 
     validDeathAndInjuryPerPersonRate() {
       return !this.$v.deathAndInjuryPerPersonRate.$invalid
     },
 
+    deathAndInjuryPerPersonRateState() {
+      return this.validDeathAndInjuryPerPersonRate ? 'is-success' : 'is-danger'
+    },
+
     validDeathAndInjuryPerEvent() {
       return !this.$v.deathAndInjuryPerEvent.$invalid
+    },
+
+    deathAndInjuryPerEventState() {
+      return this.validDeathAndInjuryPerEvent ? 'is-success' : 'is-danger'
     },
 
     validDeathAndInjuryPerEventRate() {
       return !this.$v.deathAndInjuryPerEventRate.$invalid
     },
 
+    deathAndInjuryPerEventRateState() {
+      return this.validDeathAndInjuryPerEventRate ? 'is-success' : 'is-danger'
+    },
+
     validPropertyDamage() {
       return !this.$v.propertyDamage.$invalid
     },
 
+    propertyDamageState() {
+      return this.validPropertyDamage ? 'is-success' : 'is-danger'
+    },
+
     validPropertyDamageRate() {
       return !this.$v.propertyDamageRate.$invalid
+    },
+
+    propertyDamageRateState() {
+      return this.validPropertyDamage ? 'is-success' : 'is-danger'
     },
   },
 
@@ -1445,7 +1516,10 @@ export default {
         insuranceType: { required },
         productType: { required },
         riskStartDate: { required },
-        riskQuarter: { required },
+        riskQuarter: {
+          required,
+          quarter: maxValue(this.maxQuarter),
+        },
         riskEndDate: { required },
         expiryQuarter: { required },
         numberOfDays: { required, numeric },
@@ -1453,18 +1527,6 @@ export default {
         //   sumInsured: and(decimalOrNum, requiredIf(() => this.optionalSumInsured)),
         // },
         sumInsured: { decimalOrNum },
-        premiumRate: {
-          premiumRate: and(
-            decimalOrNum,
-            requiredIf(() => this.optionalPremiumRate)
-          ),
-        },
-        basicPremiumAmount: {
-          basicPremiumAmount: and(
-            decimalOrNum,
-            requiredIf(() => this.optionalPremiumAmount)
-          ),
-        },
         vehicle: {
           vehicleMake: { required, name },
           vehicleModel: { required, nameNum },
@@ -1500,7 +1562,16 @@ export default {
 
     ...mapActions('clients', { loadClients: 'load' }),
 
-    ...mapActions('external-services', ['addColor']),
+    ...mapActions('risks', {
+      pushRiskToState: 'addRisk',
+      removeRiskFromState: 'deleteRisk',
+      refreshRisks: 'refreshRisks',
+    }),
+
+    ...mapActions('external-services', {
+      loadColors: 'load',
+      addColor: 'addColor',
+    }),
 
     clientSelected(option, event) {
       this.$v.quotation.clientCode.$touch()
@@ -1523,6 +1594,7 @@ export default {
           value: this.color,
         },
         confirmText: 'Add',
+
         onConfirm: (value) => {
           this.addColor(value)
           this.$refs.colorComplete.setSelected(value)
@@ -1530,8 +1602,6 @@ export default {
         },
       })
     },
-
-    ...mapActions('external-services', { loadColors: 'load' }),
 
     // Policy details
     // Handle start date change
@@ -1972,7 +2042,8 @@ export default {
     onRiskSubmit() {
       try {
         this.$v.risk.$touch()
-        if (this.$v.risk.$error) throw new Error('Please check the risk form')
+        if (this.$v.risk.$error)
+          throw new Error('Please check the form for errors')
 
         this.risk.limitsOfLiability = []
 
@@ -2006,7 +2077,11 @@ export default {
           })
         }
 
-        this.quotation.risks.push(this.risk)
+        this.quotation.risks.push({
+          ...this.risk,
+          riskStartDate: this.risk.riskStartDate.toISOString(),
+          riskEndDate: this.risk.riskEndDate.toISOString(),
+        })
         this.addRisk = !this.addRisk
         this.submitQuote = true
         this.onRiskReset()
@@ -2035,7 +2110,7 @@ export default {
           type: 'is-success',
         })
 
-        this.$router.push({ name: 'Manage Quotations' })
+        this.$router.push({ path: '/' })
       } catch (error) {
         const msg = error.response ? error.response.data.message : error.message
         this.$buefy.toast.open({
@@ -2054,9 +2129,8 @@ export default {
         position: 'is-top',
         type: 'is-info',
       })
-      // this.quotation.risks.splice(index, 1)
-      // this.submitQuote = !(this.quotation.risks.length === 0)
-      console.info('Deleting risk:', index)
+      this.quotation.risks.splice(index, 1)
+      this.submitQuote = !(this.quotation.risks.length === 0)
     },
 
     onRiskReset() {
@@ -2100,7 +2174,7 @@ export default {
 
     resetFormHelpers() {
       // this.basicPremiumType = null
-      this.liabilityType = null
+      this.liabilityType = 'Standard'
       // Third party liability limits
       this.combinedLimits = this.defaultCombinedLimitsMin
       this.combinedLimitsRate = 0
