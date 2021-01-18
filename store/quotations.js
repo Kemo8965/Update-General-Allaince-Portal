@@ -182,16 +182,33 @@ export const actions = {
         quotation.quoteNumber
       )
 
-      await asyncForEach(submittedQuote.risks, async (risk, index) => {
-        await http.post(
-          `/vehicle-details/${risk.id}`,
-          quotation.risks[index].vehicle
-        )
-      })
-      // console.info('Quotation submitted:', JSON.stringify(quotation))
+      const quoteWithVehicle = await asyncForEach(
+        submittedQuote.risks,
+        async (risk, index, arr) => {
+          const { status } = await http.post(
+            `/vehicle-details/${risk.id}`,
+            quotation.risks[index].vehicle
+          )
+
+          if (status === 201 && index === arr.length - 1) {
+            // Load quotations after posting vehicle details
+            await dispatch('load')
+
+            // reload quotation with vehicle attached
+            const loopQuoteWithVehicle = await dispatch(
+              'quotationByQuoteNumber',
+              quotation.quoteNumber
+            )
+
+            return loopQuoteWithVehicle
+          }
+        }
+      )
 
       commit(SET_LOADING, false)
-      return submittedQuote
+
+      return quoteWithVehicle
+      // console.info('Quotation submitted:', JSON.stringify(quotation))
     } catch (error) {
       commit(SET_LOADING, false)
       throw error

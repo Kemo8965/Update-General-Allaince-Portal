@@ -776,6 +776,8 @@ export default {
     return {
       minDate,
 
+      policyToast: null,
+
       money: {
         decimal: '.',
         thousands: '',
@@ -2129,7 +2131,11 @@ export default {
           focusOn: 'confirm',
           closeOnConfirm: false,
           onConfirm: async (value, { close }) => {
-            this.$buefy.toast.open(`Creating policy, please wait...`)
+            this.policyToast = this.$buefy.toast.open({
+              message: `Creating policy, please wait...`,
+              indefinite: true,
+              type: 'is-info',
+            })
             // submit quote
             const quote = await this.submit(this.quotation)
 
@@ -2141,6 +2147,11 @@ export default {
 
             // Make payment
             this.selectPolicy(policy)
+
+            if (this.policyToast) {
+              this.policyToast.close()
+              this.policyToast = null
+            }
 
             this.$buefy.dialog.confirm({
               title: 'Make Payment',
