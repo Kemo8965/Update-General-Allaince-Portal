@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="columns mt-6 px-4">
+    <div class="px-4 mt-6 columns">
       <div class="column">
         <h2 class="title is-size-2">Available Actions</h2>
         <div class="box">
@@ -8,7 +8,7 @@
             <b-button
               v-for="({ name, icon, type, path }, index) in actions"
               :key="index"
-              class="my-4 mx-2"
+              class="mx-2 my-4"
               :type="type"
               :icon-left="icon"
               size="is-large"
@@ -16,7 +16,7 @@
               >{{ name | startCase }}</b-button
             >
             <b-button
-              class="my-4 mx-2"
+              class="mx-2 my-4"
               type="is-danger is-inverted"
               icon-right="logout"
               size="is-large"
@@ -31,12 +31,8 @@
 </template>
 
 <script>
-import { mapGetters, mapActions, mapState } from 'vuex'
-
 export default {
   name: 'Dashboard',
-
-  middleware: 'auth',
 
   data() {
     return {
@@ -69,15 +65,9 @@ export default {
     }
   },
 
-  computed: {
-    ...mapGetters('auth', ['loading']),
-
-    ...mapState('auth', { user: 'currentUser' }),
-  },
+  computed: {},
 
   methods: {
-    ...mapActions('auth', ['logOut']),
-
     async endSession() {
       await this.$buefy.dialog.confirm({
         title: 'Log out',
@@ -87,7 +77,7 @@ export default {
         type: 'is-warning',
         hasIcon: true,
         onConfirm: async () => {
-          await this.logOut()
+          await this.$auth.logout()
           this.$buefy.toast.open({
             duration: 5000,
             message: 'Until next time, see you!',

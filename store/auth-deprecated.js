@@ -47,7 +47,7 @@ export const actions = {
       commit(SET_LOADING, false)
     } catch (error) {
       commit(SET_LOADING, false)
-      console.error(error.message)
+      this.$log.error(error.message)
       throw error
     }
   },
@@ -59,7 +59,7 @@ export const actions = {
       this.$cookies.remove('token')
       commit(SET_AUTH_USER, null)
     } catch (error) {
-      console.error(error.message)
+      this.$log.error(error.message)
     }
   },
 
@@ -102,7 +102,7 @@ export const actions = {
         return user
       }
     } catch (error) {
-      console.error(error.message)
+      this.$log.error(error.message)
     }
   },
 }

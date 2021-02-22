@@ -2,6 +2,8 @@ import { SET_CURRENCY } from '@/helpers/mutation-types'
 
 export const state = () => ({
   currency: null,
+  currencies: ['USD', 'ZMW'],
+  quarters: ['1', '2', '3', '4'],
   companyDetails: {
     name: 'General Alliance Insurance Zambia',
     address: [
@@ -19,6 +21,18 @@ export const state = () => ({
 })
 
 export const getters = {
+  currencies(state) {
+    return state.currencies
+      .sort((a, b) => a - b)
+      .map((currency) => ({ label: currency, value: currency }))
+  },
+
+  quarters(state) {
+    return state.quarters
+      .sort((a, b) => a - b)
+      .map((quarter) => ({ label: quarter, value: quarter }))
+  },
+
   selectedCurrency(state) {
     return state.currency
   },

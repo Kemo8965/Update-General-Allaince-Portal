@@ -1,5 +1,7 @@
-import { http } from '@/helpers/axios-instance'
+import { api, http } from '@/helpers/axios-instance'
 import _ from 'lodash'
+import { getField, updateField } from 'vuex-map-fields'
+import { DateTime } from 'luxon'
 import {
   SET_INDIVIDUAL_CLIENTS,
   ADD_INDIVIDUAL_CLIENT,
@@ -18,6 +20,21 @@ export const state = () => ({
   selectedClient: null,
   all: [],
   individual: [],
+  individualClientForm: {
+    firstName: null,
+    lastName: null,
+    title: null,
+    dateOfBirth: null,
+    gender: null,
+    maritalStatus: null,
+    idNumber: null,
+    idType: null,
+    phoneNumber: null,
+    email: null,
+    residentialAddress: null,
+    nationality: 'Zambian',
+    agencyID: '1',
+  },
   individualOptions: {
     title: ['Mr', 'Mrs', 'Miss', 'Dr', 'Prof', 'Sir'],
     gender: ['Male', 'Female', 'Other'],
@@ -29,6 +46,8 @@ export const state = () => ({
 })
 
 export const getters = {
+  getField,
+
   loading(state) {
     return state.loading
   },
@@ -39,7 +58,7 @@ export const getters = {
 
   clientList(_, getters) {
     return getters.allClients.map((client) => ({
-      text: getClientName(client, false),
+      label: getClientName(client),
       value: client.id,
     }))
   },
@@ -69,17 +88,19 @@ export const getters = {
   },
 
   selectedClientName(state, getters) {
-    return getters.selectedClient
-      ? getClientName(state.selectedClient, false)
-      : null
+    return getters.selectedClient ? getClientName(state.selectedClient) : null
   },
 
   selectedTitledClientName(state, getters) {
-    return getters.selectedClient ? getClientName(state.selectedClient) : null
+    return getters.selectedClient
+      ? getClientName(state.selectedClient, true)
+      : null
   },
 }
 
 export const mutations = {
+  updateField,
+
   [SET_INDIVIDUAL_CLIENTS](state, payload) {
     state.individual = payload
   },
@@ -113,45 +134,35 @@ export const actions = {
   async load({ commit }) {
     try {
       commit(SET_LOADING, true)
-      const { data: individuals } = await http.get('/clients/individual')
-      const { data: corporates } = await http.get('/clients/corporate')
-      commit(SET_INDIVIDUAL_CLIENTS, individuals)
-      commit(SET_CORPORATE_CLIENTS, corporates)
-      commit(SET_ALL_CLIENTS, [...individuals, ...corporates])
+      const { data: individuals } = await api.get('/client/individualClients')
+      const { data: corporates } = await api.get('/client/corporateClients')
+      commit(SET_INDIVIDUAL_CLIENTS, individuals.data)
+      commit(SET_CORPORATE_CLIENTS, corporates.data)
+
+      commit(SET_ALL_CLIENTS, [...individuals.data, ...corporates.data])
       commit(SET_LOADING, false)
     } catch (error) {
       commit(SET_LOADING, false)
-      console.error(error.message)
+      this.$log.error(error.message)
     }
   },
 
-  async createIndividualClient({ commit }, client) {
+  async createIndividualClient({ state, commit }) {
     try {
       commit(SET_LOADING, true)
-      const response = await fetch(
-        `${process.env.NUXT_ENV_NUMBER_GEN_API_URL}/savenda-client-number/${clientType.IND}`
-      )
+      const client = state.individualClientForm
 
-      if (!response.ok) {
-        throw new Error(`${response.status}: Failed to create client number!`)
-      }
-
-      const { data: clientNumber } = await response.json(`${process}`)
-
-      client.clientID = clientNumber.client_number
-      client.clientType = `Individual`
-      client.status = `Inactive`
-      client.address = _.startCase(client.address)
-      client.accountName = _.startCase(client.accountName)
-      client.accountType = _.startCase(client.accountType)
-      client.bank = _.startCase(client.bank)
-      client.branch = _.startCase(client.branch)
+      client.residentialAddress = _.startCase(client.residentialAddress)
       client.firstName = _.startCase(client.firstName)
-      client.middleName = _.startCase(client.middleName)
       client.lastName = _.startCase(client.lastName)
-      client.occupation = _.startCase(client.occupation)
-      const { data } = await http.post(`/clients/individual`, client)
-      commit(ADD_INDIVIDUAL_CLIENT, data)
+      const { data: response } = await api.post(
+        `/client/createIndividualClient`,
+        {
+          ...client,
+          dateOfBirth: DateTime.fromJSDate(client.dateOfBirth).toLocaleString(),
+        }
+      )
+      commit(ADD_INDIVIDUAL_CLIENT, response.data)
       commit(SET_LOADING, false)
     } catch (error) {
       commit(SET_LOADING, false)
@@ -208,7 +219,7 @@ export const actions = {
   },
 }
 
-function getClientName(client, useTitle = true) {
+function getClientName(client, useTitle = false) {
   if (client.clientID.includes('IND')) {
     const title = useTitle ? client.title : null
     let fullname

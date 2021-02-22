@@ -39,7 +39,7 @@ export const actions = {
       commit(SET_CLASSES, data)
       commit(SET_LOADING, false)
     } catch ({ message }) {
-      console.error(message)
+      this.$log.error(message)
       commit(SET_LOADING, false)
     }
   },

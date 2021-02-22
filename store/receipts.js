@@ -109,7 +109,7 @@ export const actions = {
       commit(SET_LOADING, false)
     } catch ({ message }) {
       commit(SET_LOADING, false)
-      console.error(message)
+      this.$log.error(message)
     }
   },
 
@@ -316,7 +316,7 @@ export const actions = {
 
       const { data: receiptResponse } = await httpPay.post(`/receipt`, receipt)
 
-      console.info('receiptResponse:', receiptResponse)
+      this.$log.info('receiptResponse: %s', receiptResponse)
 
       if (!receiptResponse.status) {
         throw new Error('Failed to create receipt!')

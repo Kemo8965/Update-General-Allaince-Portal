@@ -208,7 +208,10 @@ export const actions = {
         setTimeout(() => {
           commit(SET_LOADING, false)
           resolve(
-            console.info('Updated risk:', JSON.stringify(state.selectedRisk))
+            this.$log.info(
+              'Updated risk: %s',
+              JSON.stringify(state.selectedRisk)
+            )
           )
           reject(new Error('A promise error occured!'))
         }, 1500)

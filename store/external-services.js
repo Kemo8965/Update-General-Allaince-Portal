@@ -54,9 +54,41 @@ export const mutations = {
 }
 
 export const actions = {
-  async load({ commit }) {
+  async load({ dispatch }) {
+    try {
+      await dispatch('loadColors')
+      await dispatch('loadCountries')
+    } catch (error) {
+      this.$log.error(error.message)
+    }
+  },
+
+  async loadColors({ commit }) {
     try {
       commit(SET_LOADING, true)
+
+      const colorList = await (
+        await fetch(
+          'https://raw.githubusercontent.com/hobbiton-technologies/json-colors/master/colors.json'
+        )
+      ).json()
+
+      commit(
+        SET_COLORS,
+        colorList.map(({ name }) => name)
+      )
+
+      commit(SET_LOADING, false)
+    } catch (error) {
+      commit(SET_LOADING, false)
+      this.$log.error(error.message)
+    }
+  },
+
+  async loadCountries({ commit }) {
+    try {
+      commit(SET_LOADING, true)
+
       const data = await (
         await fetch('https://restcountries.eu/rest/v2/all')
       ).json()
@@ -73,22 +105,12 @@ export const actions = {
         })
       )
 
-      const colorList = await (
-        await fetch(
-          'https://raw.githubusercontent.com/hobbiton-technologies/json-colors/master/colors.json'
-        )
-      ).json()
-
-      commit(
-        SET_COLORS,
-        colorList.map(({ name }) => name)
-      )
       commit(SET_COUNTRIES, countries)
       commit(SET_COUNTRY_CALLING_CODES, callingCodes)
       commit(SET_LOADING, false)
     } catch (error) {
       commit(SET_LOADING, false)
-      console.error(error.message)
+      this.$log.error(error.message)
     }
   },
 

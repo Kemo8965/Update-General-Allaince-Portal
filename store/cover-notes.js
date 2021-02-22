@@ -22,7 +22,7 @@ export const actions = {
       const { data } = await http.get(`documents/cover-notes`)
       commit(SET_COVER_NOTES, data)
     } catch ({ message }) {
-      console.error(message)
+      this.$log.error(message)
     }
   },
 }

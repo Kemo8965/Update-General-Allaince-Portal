@@ -1,6 +1,6 @@
 <template>
   <div class="columns">
-    <div class="column mt-6 px-6">
+    <div class="px-6 mt-6 column">
       <b-tabs
         v-model="activeTab"
         vertical
@@ -37,8 +37,6 @@
 
 export default {
   name: 'Receipts',
-
-  middleware: 'auth',
 
   data() {
     return {

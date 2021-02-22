@@ -33,7 +33,7 @@
         </b-navbar-item>
       </template>
 
-      <template v-if="loggedIn" v-slot:end>
+      <template v-if="$auth.loggedIn" v-slot:end>
         <b-navbar-item tag="div" class="is-hidden-mobile">
           <b-button icon-left="menu" @click="sidebar = !sidebar"></b-button>
         </b-navbar-item>
@@ -76,8 +76,6 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-
 export default {
   data() {
     return {
@@ -114,13 +112,9 @@ export default {
     }
   },
 
-  computed: {
-    ...mapGetters('auth', ['loggedIn']),
-  },
+  computed: {},
 
   methods: {
-    ...mapActions('auth', ['logOut']),
-
     pushRoute(path) {
       this.sidebar = false
       this.$router.push({ path })
@@ -137,7 +131,7 @@ export default {
         type: 'is-primary',
         hasIcon: true,
         onConfirm: async () => {
-          await this.logOut()
+          await this.$auth.logout()
           this.$buefy.toast.open({
             duration: 5000,
             message: 'Until next time, see you!',

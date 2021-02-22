@@ -47,7 +47,7 @@ export const actions = {
       commit(SET_LOADING, false)
     } catch ({ message }) {
       commit(SET_LOADING, false)
-      console.error(message)
+      this.$log.error(message)
     }
   },
 

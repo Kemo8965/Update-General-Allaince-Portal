@@ -13,7 +13,7 @@ export const actions = {
         }, 3000)
       })
     } catch (error) {
-      console.error(error.message)
+      this.$log.error(error.message)
       throw error
     }
   },

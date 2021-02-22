@@ -15,7 +15,7 @@ export const actions = {
       const { data } = await httpPay.get(`/transaction`)
       commit(SET_TRANSACTIONS, data.data)
     } catch ({ message }) {
-      console.error(message)
+      this.$log.error(message)
     }
   },
 
@@ -32,7 +32,7 @@ export const actions = {
 
       return transactions
     } catch ({ message }) {
-      console.error(message)
+      this.$log.error(message)
     }
   },
 
@@ -48,7 +48,7 @@ export const actions = {
       //   }, 1500)
       // })
     } catch ({ message }) {
-      console.error(message)
+      this.$log.error(message)
     }
   },
 }

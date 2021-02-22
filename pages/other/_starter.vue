@@ -1,6 +1,6 @@
 <template>
   <div class="columns">
-    <div class="column mt-6 px-6"></div>
+    <div class="px-6 mt-6 column"></div>
   </div>
 </template>
 
@@ -9,8 +9,6 @@
 
 export default {
   name: 'Starter',
-
-  middleware: 'auth',
 
   data() {
     return {}

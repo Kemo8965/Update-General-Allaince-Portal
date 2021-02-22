@@ -43,6 +43,9 @@ export default {
     { src: '@/plugins/vue-currency-filter.js', mode: 'client' },
     { src: '@/plugins/vue-lodash-filter.js', mode: 'client' },
     { src: '@/plugins/vue-mask.js', mode: 'client' },
+    { src: '@/plugins/vue-formulate.js', mode: 'client' },
+    { src: '@/plugins/persisted-state.client.js' },
+    { src: '@/plugins/pino.js' },
   ],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
@@ -62,42 +65,88 @@ export default {
     'nuxt-buefy',
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    '@nuxtjs/proxy',
+    '@nuxtjs/auth-next',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
     // Firebase
-    '@nuxtjs/firebase',
+    // '@nuxtjs/firebase',
     // Cookies
-    'cookie-universal-nuxt',
+    // 'cookie-universal-nuxt',
   ],
 
-  // Firebase
-  firebase: {
-    config: {
-      apiKey: process.env.FIREBASE_API_KEY,
-      authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-      messagingSenderId: process.env.FIREBASE_MSG_SND_ID,
-      appId: process.env.FIREBASE_APP_ID,
-      measurementId: process.env.FIREBASE_MEAS_ID,
+  // Nuxt Auth
+  auth: {
+    redirect: {
+      login: '/auth/login',
+      logout: '/auth/login',
+      callback: '/auth/login',
+      home: '/',
     },
-    services: {
-      auth: {
-        persistence: 'local', // default
-        initialize: {
-          // onAuthStateChangedMutation: 'ON_AUTH_STATE_CHANGED_MUTATION',
-          onAuthStateChangedAction: 'auth/onAuthStateChanged',
-          subscribeManually: false,
+
+    strategies: {
+      local: {
+        token: {
+          required: false,
+          type: false,
         },
-        ssr: false, // default
+        user: {
+          property: false, // 'user',
+          // autoFetch: true
+        },
+        endpoints: {
+          login: { url: '/api/auth/login', method: 'post' },
+          logout: false, // { url: '/api/auth/logout', method: 'post' },
+          user: false, // { url: '/api/auth/user', method: 'get' },
+        },
       },
-      firestore: true,
     },
   },
 
+  // Firebase
+  // firebase: {
+  //   config: {
+  //     apiKey: process.env.FIREBASE_API_KEY,
+  //     authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  //     projectId: process.env.FIREBASE_PROJECT_ID,
+  //     storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  //     messagingSenderId: process.env.FIREBASE_MSG_SND_ID,
+  //     appId: process.env.FIREBASE_APP_ID,
+  //     measurementId: process.env.FIREBASE_MEAS_ID,
+  //     databaseURL: false,
+  //   },
+  //   services: {
+  //     auth: {
+  //       persistence: 'local', // default
+  //       initialize: {
+  //         // onAuthStateChangedMutation: 'ON_AUTH_STATE_CHANGED_MUTATION',
+  //         onAuthStateChangedAction: 'auth/onAuthStateChanged',
+  //         subscribeManually: false,
+  //       },
+  //       ssr: false, // default
+  //     },
+  //     firestore: true,
+  //   },
+  // },
+
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
-  axios: {},
+  proxy: {
+    '/api/': {
+      target: process.env.NUXT_ENV_NEW_API_URL,
+      pathRewrite: { '^/api/': '' },
+    },
+  },
+
+  axios: {
+    proxy: true,
+    // https: true,
+    baseURL: process.env.NUXT_ENV_NEW_API_URL,
+  },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {},
+
+  router: {
+    middleware: ['auth'],
+  },
 }

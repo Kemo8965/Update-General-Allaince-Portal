@@ -124,7 +124,7 @@ export const actions = {
       commit(SET_LOADING, false)
     } catch (error) {
       commit(SET_LOADING, false)
-      console.error(error.message)
+      this.$log.error(error.message)
     }
   },
 
@@ -208,7 +208,7 @@ export const actions = {
       commit(SET_LOADING, false)
 
       return quoteWithVehicle
-      // console.info('Quotation submitted:', JSON.stringify(quotation))
+      // this.$log.info('Quotation submitted:', JSON.stringify(quotation))
     } catch (error) {
       commit(SET_LOADING, false)
       throw error
@@ -242,7 +242,7 @@ export const actions = {
       return data
       // return await new Promise((resolve, reject) => {
       //   setTimeout(() => {
-      //     // resolve(console.info(JSON.stringify(state.selectedQuotation)))
+      //     // resolve(this.$log.info(JSON.stringify(state.selectedQuotation)))
       //     commit(SET_LOADING, false)
       //     resolve(state.selectedQuotation)
       //     reject(new Error('Promise error!'))
@@ -298,7 +298,7 @@ function onQuarterChange(quarter, state) {
 
     return calculateEndDate(quarter, startDate)
   } catch (error) {
-    console.error(error.message)
+    this.$log.error(error.message)
   }
 }
 
@@ -311,7 +311,7 @@ function onStartDateChange(date, state) {
       return calculateEndDate(state.selectedQuotation.quarter, startDate)
     }
   } catch (error) {
-    console.error(error.message)
+    this.$log.error(error.message)
   }
 }
 

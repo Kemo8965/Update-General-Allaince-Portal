@@ -14,7 +14,7 @@
       <b-button class="mr-3" icon-left="refresh" @click="load"
         >Refresh</b-button
       >
-      <b-button icon-left="account-plus" type="is-primary"
+      <b-button icon-left="account-plus" type="is-primary" @click="addNewClient"
         >Add New Client</b-button
       >
     </b-field>
@@ -42,37 +42,19 @@
         {{ props.row.clientID }}
       </b-table-column>
 
-      <b-table-column
-        v-slot="props"
-        field="name"
-        label="Name"
-        sortable
-        searchable
-      >
+      <b-table-column v-slot="props" field="name" label="Name" sortable>
         {{ fullname(props.row) }}
       </b-table-column>
 
-      <b-table-column
-        v-slot="props"
-        field="email"
-        label="Email"
-        sortable
-        searchable
-      >
+      <b-table-column v-slot="props" field="email" label="Email" sortable>
         {{ props.row.email }}
       </b-table-column>
 
-      <b-table-column
-        v-slot="props"
-        field="phone"
-        label="Phone"
-        sortable
-        searchable
-      >
-        {{ props.row.phone }}
+      <b-table-column v-slot="props" field="phone" label="Phone" sortable>
+        {{ props.row.phoneNumber }}
       </b-table-column>
 
-      <b-table-column v-slot="props" field="status" label="Status" sortable>
+      <!-- <b-table-column v-slot="props" field="status" label="Status" sortable>
         <span
           :class="[
             'tag',
@@ -85,7 +67,7 @@
           ]"
           >{{ props.row.status }}</span
         >
-      </b-table-column>
+      </b-table-column> -->
 
       <b-table-column label="Options">
         <span class="buttons">
@@ -99,6 +81,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import _ from 'lodash'
+import AddIndividualClientModal from '~/components/modals/add-individual-client-modal'
 
 export default {
   name: 'CorporateClientsTable',
@@ -147,6 +130,27 @@ export default {
         fullname = `${client.firstName} ${client.lastName}`
       }
       return _.startCase(`${title} ${fullname.toLowerCase()}`)
+    },
+
+    addNewClient() {
+      this.$buefy.modal.open({
+        parent: this,
+        component: AddIndividualClientModal,
+        hasModalCard: true,
+        trapFocus: true,
+        canCancel: ['x'],
+        destroyOnHide: true,
+        customClass: '',
+        width: '1200px',
+        onCancel: () => {
+          this.$buefy.toast.open({
+            message: `Client addition cancelled!`,
+            duration: 5000,
+            position: 'is-top',
+            type: 'is-info',
+          })
+        },
+      })
     },
   },
 }

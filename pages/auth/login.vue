@@ -1,26 +1,43 @@
 <template>
-  <div class="is-full-height grid">
+  <div class="grid is-full-height">
     <div class="card form-card">
-      <form id="login-form" class="card-content" @submit.prevent="onSubmit">
+      <FormulateForm
+        #default="{ isLoading }"
+        v-model="form"
+        :class="['card-content']"
+        @submit="onSubmit"
+      >
         <p class="my-4">
           Enter your email address and password to access the portal.
         </p>
-        <b-field label="Email" :type="emailState" :message="emailMessage">
-          <b-input v-model="$v.form.email.$model" type="email"> </b-input>
-        </b-field>
 
-        <b-field
-          label="Password"
-          :type="passwordState"
-          :message="passwordMessage"
+        <FormulateInput
+          type="email"
+          name="email"
+          label="Email"
+          validation="bail|required|email"
+          data-has-icons-left
         >
-          <b-input
-            v-model="$v.form.password.$model"
-            type="password"
-            password-reveal
-          >
-          </b-input>
-        </b-field>
+          <template #suffix>
+            <span class="icon is-left">
+              <i class="mdi mdi-account"></i>
+            </span>
+          </template>
+        </FormulateInput>
+
+        <FormulateInput
+          type="password"
+          name="password"
+          label="Password"
+          validation="required"
+          data-has-icons-left
+        >
+          <template #suffix>
+            <span class="icon is-left">
+              <i class="mdi mdi-key"></i>
+            </span>
+          </template>
+        </FormulateInput>
 
         <b-button
           class="mt-4"
@@ -30,25 +47,19 @@
           native-type="submit"
           value="Login"
         />
-
-        <b-loading v-model="loading" is-full-page></b-loading>
-      </form>
+        <b-loading :active="isLoading" is-full-page></b-loading>
+      </FormulateForm>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import { email, required } from 'vuelidate/lib/validators'
-// const password = helpers.regex(
-//   'password',
-//   /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm
-// )
+import { mapActions } from 'vuex'
 
 export default {
   name: 'LogIn',
 
-  middleware: 'guest',
+  auth: 'guest',
 
   data() {
     return {
@@ -59,80 +70,30 @@ export default {
     }
   },
 
-  validations: {
-    form: {
-      email: { email, required },
-      password: { required },
-    },
-  },
-
-  computed: {
-    ...mapGetters('auth', ['loading']),
-
-    validEmail() {
-      return this.$v.form.email.$dirty ? !this.$v.form.email.$invalid : null
-    },
-
-    emailState() {
-      if (this.$v.form.email.$dirty) {
-        return this.validEmail ? 'is-success' : 'is-danger'
-      }
-
-      return null
-    },
-
-    emailMessage() {
-      return this.$v.form.email.$dirty && !this.validEmail
-        ? [
-            { 'Please enter a valid email address': this.$v.form.email.email },
-            { 'Your email address is required': this.$v.form.email.required },
-          ]
-        : null
-    },
-
-    validPassword() {
-      return this.$v.form.password.$dirty
-        ? !this.$v.form.password.$invalid
-        : null
-    },
-
-    passwordState() {
-      if (this.$v.form.password.$dirty) {
-        return this.validPassword ? 'is-success' : 'is-danger'
-      }
-
-      return null
-    },
-
-    passwordMessage() {
-      return this.$v.form.password.$dirty && !this.validPassword
-        ? 'Your password is required'
-        : null
-    },
-  },
+  computed: {},
 
   methods: {
     ...mapActions('auth', ['logIn']),
 
     async onSubmit() {
       try {
-        this.$v.$touch()
-        if (!this.$v.$invalid) {
-          await this.logIn(this.form)
+        const { data: response } = await this.$auth.loginWith('local', {
+          data: this.form,
+        })
+        const user = response.data
 
-          this.$buefy.toast.open({
-            duration: 5000,
-            message: 'Welcome back!',
-            position: 'is-top',
-            type: 'is-success',
-          })
+        this.$auth.setUser(user)
 
-          this.onReset()
+        this.$buefy.toast.open({
+          duration: 5000,
+          message: 'Welcome back!',
+          position: 'is-top',
+          type: 'is-success',
+        })
 
-          this.$router.push({ path: '/' })
-        } else {
-          throw new Error('Hmm... something went wrong!')
-        }
+        this.onReset()
+
+        this.$router.push({ path: '/' })
       } catch (error) {
         this.form.password = null
         const message = error.response
@@ -149,7 +110,6 @@ export default {
 
     onReset() {
       this.form.password = null
-      this.$v.form.password.$reset()
     },
   },
 }

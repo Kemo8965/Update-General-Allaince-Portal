@@ -1,6 +1,6 @@
 <template>
   <div class="columns">
-    <div class="column mt-6 px-6">
+    <div class="px-6 mt-6 column">
       <b-tabs v-model="activeTab" vertical position="is-left" type="is-toggle">
         <b-tab-item label="Individual Clients">
           <individual-clients-table></individual-clients-table>
@@ -18,8 +18,6 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'ManageClients',
-
-  middleware: 'auth',
 
   data() {
     return {

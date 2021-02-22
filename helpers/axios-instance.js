@@ -14,6 +14,9 @@ export const http = axios.create({
   baseURL: process.env.NUXT_ENV_API_URL,
 })
 
+export const api = axios.create({
+  baseURL: process.env.NUXT_ENV_NEW_API_URL,
+})
 export const httpAuth = axios.create({
   baseURL: process.env.NUXT_ENV_AUTH_URL,
 })

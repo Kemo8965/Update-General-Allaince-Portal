@@ -11,15 +11,15 @@
         </option>
       </b-select>
 
-      <b-button class="mr-3" icon-left="refresh" @click="load"
-        >Refresh</b-button
-      >
-      <b-button
-        icon-left="plus"
-        type="is-primary"
-        @click="$emit('create-policy')"
-        >Create New Policy</b-button
-      >
+      <div class="buttons">
+        <b-button icon-left="refresh" @click="load">Refresh</b-button>
+        <b-button
+          icon-left="plus"
+          type="is-primary"
+          @click="$emit('create-policy')"
+          >Create New Policy</b-button
+        >
+      </div>
     </b-field>
     <b-table
       :data="tableData"
