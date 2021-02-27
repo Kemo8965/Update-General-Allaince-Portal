@@ -1,205 +1,259 @@
+/* eslint-disable prettier/prettier */
 import {
-  SET_LOADING,
-  SET_POLICIES,
-  SET_SELECTED_POLICY,
-  ACTIVATE_POLICY,
-  GET_ACTIVE_POLICIES,
-  GET_INACTIVE_POLICIES,
+    SET_LOADING,
+    SET_POLICIES,
+    CREATE_POLICY,
+    SET_SELECTED_POLICY,
+    ACTIVATE_POLICY,
+    GET_ACTIVE_POLICIES,
+    GET_INACTIVE_POLICIES,
 } from '@/helpers/mutation-types'
 // import { DateTime } from 'luxon'
 // import currency from 'currency.js'
 import { getField, updateField } from 'vuex-map-fields'
+
 import { api } from '~/helpers/axios-instance'
 
+
 export const state = () => ({
-  all: [],
-  activePolicies: [],
-  inactivePolicies: [],
-  selectedPolicy: null,
-  loading: false,
-  form: {
-    clientType: null,
-    numOfQuarters: null,
-    startDate: null,
-    endDate: null,
-    currency: null,
-    createdBy: null,
-    agencyID: null,
-    clientID: null,
-    productTypeID: null,
-    vehicles: [],
-  },
+    all: [],
+    activePolicies: [],
+    inactivePolicies: [],
+    selectedPolicy: null,
+    loading: false,
+    form: {
+        clientType: "INDIVIDUAL",
+        agencyID: "1",
+        createdBy: "2",
+        numOfQuarters: null,
+        startDate: null,
+        endDate: null,
+        currency: null,
+        clientID: null,
+        vehicles: [
+
+            {
+                vehicleMake: null,
+                vehicleModelName: null,
+                yearOfManufacture: null,
+                vehicleRegNumber: null,
+                vehicleEngineNumber: null,
+                vehicleChassisNumber: null,
+                vehicleColour: null,
+                seatCapacity: null,
+                cubicCapacity: null,
+                bodyType: null,
+                productTypeID: null,
+                certificateNumber: null,
+                startDate: null,
+                endDate: null,
+                numOfQuarters: null,
+                insuredNames: null,
+                premium: null
+
+            }
+
+
+        ],
+    },
+
+    vehicle: [],
+
 })
 
 export const getters = {
-  getField,
+    getField,
 
-  selectedPolicy(state) {
-    return state.selectedPolicy
-  },
+    selectedPolicy(state) {
+        return state.selectedPolicy
+    },
 
-  policies(state) {
-    return state.all
-  },
+    policies(state) {
+        return state.all
+    },
 
-  inactivePolicies(state) {
-    return state.inactivePolicies
-  },
+    inactivePolicies(state) {
+        return state.inactivePolicies
+    },
 
-  activePolicies(state) {
-    return state.activePolicies
-  },
+    activePolicies(state) {
+        return state.activePolicies
+    },
 
-  loading(state) {
-    return state.loading
-  },
+    loading(state) {
+        return state.loading
+    },
 }
 
 export const mutations = {
-  updateField,
+    updateField,
 
-  [SET_LOADING](state, loading) {
-    state.loading = loading
-  },
+    [SET_LOADING](state, loading) {
+        state.loading = loading
+    },
 
-  [SET_POLICIES](state, policies) {
-    state.all = policies
-  },
+    [CREATE_POLICY](state, createPolicy) {
+        state.createPolicy = createPolicy
+    },
 
-  [SET_SELECTED_POLICY](state, policy) {
-    state.selectedPolicy = policy
-  },
+    [SET_POLICIES](state, policies) {
+        state.all = policies
+    },
 
-  [GET_ACTIVE_POLICIES](state, policies) {
-    state.activePolicies = policies
-  },
+    [SET_SELECTED_POLICY](state, policy) {
+        state.selectedPolicy = policy
+    },
 
-  [GET_INACTIVE_POLICIES](state, policies) {
-    state.inactivePolicies = policies
-  },
+    [GET_ACTIVE_POLICIES](state, policies) {
+        state.activePolicies = policies
+    },
 
-  [ACTIVATE_POLICY](state) {
-    state.selectedPolicy.status = 'Active'
-    state.selectedPolicy.receiptStatus = 'Receipted'
-    state.selectedPolicy.paymentPlan = 'Created'
-    const index = state.all.findIndex(
-      ({ id }) => id === state.selectedPolicy.id
-    )
-    state.all.splice(index, 1, state.selectedPolicy)
-  },
+    [GET_INACTIVE_POLICIES](state, policies) {
+        state.inactivePolicies = policies
+    },
+
+    [ACTIVATE_POLICY](state) {
+        state.selectedPolicy.status = 'Active'
+        state.selectedPolicy.receiptStatus = 'Receipted'
+        state.selectedPolicy.paymentPlan = 'Created'
+        const index = state.all.findIndex(
+            ({ id }) => id === state.selectedPolicy.id
+        )
+        state.all.splice(index, 1, state.selectedPolicy)
+    },
 }
 
 export const actions = {
-  async load({ dispatch, commit, getters }) {
-    try {
-      await dispatch('getActivePolicies')
-      await dispatch('getInactivePolicies')
+    async load({ dispatch, commit, getters }) {
+        try {
+            await dispatch('getActivePolicies')
+            await dispatch('getInactivePolicies')
 
-      // commit(SET_POLICIES, [
-      //   ...getters.activePolicies,
-      //   ...getters.inactivePolicies,
-      // ])
-    } catch (error) {
-      this.$log.error(error.message)
-    }
-  },
+            // commit(SET_POLICIES, [
+            //   ...getters.activePolicies,
+            //   ...getters.inactivePolicies,
+            // ])
+        } catch (error) {
+            this.$log.error(error.message)
+        }
+    },
 
-  async getActivePolicies({ commit }) {
-    try {
-      commit(SET_LOADING, true)
-      const { data: activePolicies } = await api.get(`/tp/receiptedPolicies`)
+    async getActivePolicies({ commit }) {
+        try {
+            commit(SET_LOADING, true)
+            const { data: activePolicies } = await api.get(`/tp/receiptedPolicies`)
 
-      activePolicies.data
-        ? commit(GET_ACTIVE_POLICIES, activePolicies.data)
-        : commit(GET_ACTIVE_POLICIES, [])
+            activePolicies.data ?
+                commit(GET_ACTIVE_POLICIES, activePolicies.data) :
+                commit(GET_ACTIVE_POLICIES, [])
 
-      commit(SET_LOADING, false)
-    } catch (error) {
-      commit(SET_LOADING, false)
-      this.$log.error(error.message)
-    }
-  },
+            commit(SET_LOADING, false)
+        } catch (error) {
+            commit(SET_LOADING, false)
+            this.$log.error(error.message)
+        }
+    },
 
-  async getInactivePolicies({ commit }) {
-    try {
-      commit(SET_LOADING, true)
-      const { data: inactivePolicies } = await api.get(
-        `/tp/unReceiptedPolicies`
-      )
+    async getInactivePolicies({ commit }) {
+        try {
+            commit(SET_LOADING, true)
+            const { data: inactivePolicies } = await api.get(
+                `/tp/unReceiptedPolicies`
+            )
 
-      inactivePolicies.data
-        ? commit(GET_INACTIVE_POLICIES, inactivePolicies.data)
-        : commit(GET_INACTIVE_POLICIES, [])
+            inactivePolicies.data ?
+                commit(GET_INACTIVE_POLICIES, inactivePolicies.data) :
+                commit(GET_INACTIVE_POLICIES, [])
 
-      commit(SET_LOADING, false)
-    } catch (error) {
-      commit(SET_LOADING, false)
-      this.$log.error(error.message)
-    }
-  },
+            commit(SET_LOADING, false)
+        } catch (error) {
+            commit(SET_LOADING, false)
+            this.$log.error(error.message)
+        }
+    },
 
-  createPolicy({ commit }) {
-    try {
-      commit(SET_LOADING, true)
+    async createPolicy({ state, commit, getters }) {
+        //  const newPolicy = state.form
+        // const mapVehicle = state.vehicle
+        // eslint-disable-next-line no-console
+        // console.log(newPolicy)
+        // eslint-disable-next-line no-console
+        // console.log(mapVehicle)
 
-      commit(SET_LOADING, false)
-    } catch (error) {
-      commit(SET_LOADING, false)
-      throw error
-    }
-  },
 
-  postPolicyToRtsa({ commit }) {
-    try {
-      commit(SET_LOADING, true)
-      // const policy = state.selectedPolicy
 
-      // // Post risks to RTSA
-      // await asyncForEach(policy.risks, async (risk) => {
-      //   const params = {
-      //     status: 1,
-      //     registrationMark: risk.vehicle.regNumber.replace(/\s/g, ''),
-      //     dateFrom: risk.riskStartDate,
-      //     dateTo: risk.riskEndDate,
-      //     insurancePolicyNo: policy.policyNumber,
-      //     chassisNumber: risk.vehicle.chassisNumber,
-      //     insuranceCompany: `General Alliance Insurance`,
-      //     insuranceCompanyId: 0,
-      //     quarter: Number(risk.expiryQuarter.split('/')[0]),
-      //   }
+        try {
+            commit(SET_LOADING, true)
+            const newPolicy = state.form
+                // const mapVehicle = state.vehicle
+            const { data: response } = await api.post(
+                `/tp/create`, {
+                    ...newPolicy,
+                    // ...mapVehicle,
 
-      //   params.insuranceType = Number(risk.insuranceType) === 7001 ? 2 : 1
+                }
+            )
+            commit(CREATE_POLICY, response.data)
+            commit(SET_LOADING, false)
+        } catch (error) {
+            commit(SET_LOADING, false)
+            throw error
+        }
 
-      //   // const { data: rtsaRes } =
-      //   await dispatch('rtsa/postData', params, {
-      //     root: true,
-      // })
 
-      // this.$log.info('rtsaRes:', rtsaRes)
-      // })
-      commit(SET_LOADING, false)
-    } catch (error) {
-      commit(SET_LOADING, false)
-      this.$log.error(error.message)
-      throw error
-    }
-  },
+    },
 
-  async activatePolicy({ commit, state }) {
-    try {
-      commit(SET_LOADING, true)
-      commit(ACTIVATE_POLICY)
-      await api.put(`/policy/${state.selectedPolicy.id}`, state.selectedPolicy)
-      commit(SET_LOADING, false)
-    } catch (error) {
-      commit(SET_LOADING, false)
-      throw error
-    }
-  },
+    postPolicyToRtsa({ commit }) {
+        try {
+            commit(SET_LOADING, true)
+                // const policy = state.selectedPolicy
 
-  selectPolicy({ commit }, policy) {
-    commit(SET_SELECTED_POLICY, policy)
-  },
+            // // Post risks to RTSA
+            // await asyncForEach(policy.risks, async (risk) => {
+            //   const params = {
+            //     status: 1,
+            //     registrationMark: risk.vehicle.regNumber.replace(/\s/g, ''),
+            //     dateFrom: risk.riskStartDate,
+            //     dateTo: risk.riskEndDate,
+            //     insurancePolicyNo: policy.policyNumber,
+            //     chassisNumber: risk.vehicle.chassisNumber,
+            //     insuranceCompany: `General Alliance Insurance`,
+            //     insuranceCompanyId: 0,
+            //     quarter: Number(risk.expiryQuarter.split('/')[0]),
+            //   }
+
+            //   params.insuranceType = Number(risk.insuranceType) === 7001 ? 2 : 1
+
+            //   // const { data: rtsaRes } =
+            //   await dispatch('rtsa/postData', params, {
+            //     root: true,
+            // })
+
+            // this.$log.info('rtsaRes:', rtsaRes)
+            // })
+            commit(SET_LOADING, false)
+        } catch (error) {
+            commit(SET_LOADING, false)
+            this.$log.error(error.message)
+            throw error
+        }
+    },
+
+    async activatePolicy({ commit, state }) {
+        try {
+            commit(SET_LOADING, true)
+            commit(ACTIVATE_POLICY)
+            await api.put(`/policy/${state.selectedPolicy.id}`, state.selectedPolicy)
+            commit(SET_LOADING, false)
+        } catch (error) {
+            commit(SET_LOADING, false)
+            throw error
+        }
+    },
+
+    selectPolicy({ commit }, policy) {
+        commit(SET_SELECTED_POLICY, policy)
+    },
 }
 
 // Add values in array

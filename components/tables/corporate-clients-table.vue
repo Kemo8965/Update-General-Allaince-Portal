@@ -14,7 +14,7 @@
       <b-button class="mr-3" icon-left="refresh" @click="load"
         >Refresh</b-button
       >
-      <b-button icon-left="account-plus" type="is-primary"
+      <b-button icon-left="account-plus" type="is-primary" @click="addNewClient"
         >Add New Client</b-button
       >
     </b-field>
@@ -98,10 +98,11 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import _ from 'lodash'
+import AddIndividualClientModal from '~/components/modals/add-individual-client-modal'
 
 export default {
   name: 'CorporateClientsTable',
-
   data() {
     return {
       isPaginated: true,
@@ -118,7 +119,7 @@ export default {
   computed: {
     ...mapGetters('clients', {
       loading: 'loading',
-      clients: 'corporateClients',
+      clients: 'individualClients',
     }),
 
     isEmpty() {
@@ -136,6 +137,38 @@ export default {
 
   methods: {
     ...mapActions('clients', ['load']),
+
+    fullname(client) {
+      const title = client.title
+      let fullname
+      if (client.middlename) {
+        fullname = `${client.firstName} ${client.middleName} ${client.lastName}`
+      } else {
+        fullname = `${client.firstName} ${client.lastName}`
+      }
+      return _.startCase(`${title} ${fullname.toLowerCase()}`)
+    },
+
+    addNewClient() {
+      this.$buefy.modal.open({
+        parent: this,
+        component: AddIndividualClientModal,
+        hasModalCard: true,
+        trapFocus: true,
+        canCancel: ['x'],
+        destroyOnHide: true,
+        customClass: '',
+        width: '1200px',
+        onCancel: () => {
+          this.$buefy.toast.open({
+            message: `Client addition cancelled!`,
+            duration: 5000,
+            position: 'is-top',
+            type: 'is-info',
+          })
+        },
+      })
+    },
   },
 }
 </script>

@@ -15,9 +15,12 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import IndividualClientsTable from '~/components/tables/individual-clients-table.vue'
+import CorporateClientsTable from '~/components/tables/corporate-clients-table'
 
 export default {
   name: 'ManageClients',
+  components: { IndividualClientsTable, CorporateClientsTable },
 
   data() {
     return {

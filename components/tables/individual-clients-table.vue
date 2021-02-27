@@ -85,7 +85,6 @@ import AddIndividualClientModal from '~/components/modals/add-individual-client-
 
 export default {
   name: 'CorporateClientsTable',
-
   data() {
     return {
       isPaginated: true,

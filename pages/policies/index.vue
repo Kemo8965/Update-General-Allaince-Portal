@@ -9,6 +9,9 @@
           <!-- <unreceipted-debits-table
             @create-policy="createPolicyTab"
           ></unreceipted-debits-table> -->
+          <captured-receipts-table>
+            <inactive-policies-table></inactive-policies-table>
+          </captured-receipts-table>
         </b-tab-item>
       </b-tabs>
     </div>
@@ -16,10 +19,14 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+import CreateNewPolicy from '~/components/forms/create-new-policy.vue'
+import CapturedReceiptsTable from '~/components/tables/captured-receipts-table.vue'
+import InactivePoliciesTable from '~/components/tables/inactive-policies-table.vue'
 
 export default {
   name: 'ManagePolicies',
+  components: { CreateNewPolicy, CapturedReceiptsTable, InactivePoliciesTable },
 
   data() {
     return {
@@ -28,7 +35,7 @@ export default {
   },
 
   computed: {
-    // ...mapGetters(),
+    ...mapGetters('policies', ['loading']),
   },
 
   async created() {

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 // SHARED
 export const SET_LOADING = 'SET_LOADING'
 
@@ -32,6 +33,8 @@ export const GET_INACTIVE_POLICIES = 'GET_INACTIVE_POLICIES'
 export const ACTIVATE_POLICY = 'ACTIVATE_POLICY'
 export const SET_SELECTED_POLICY = 'SET_SELECTED_POLICY'
 export const SET_COVER_NOTES = 'SET_COVER_NOTES'
+export const CREATE_POLICY = 'CREATE_POLICY'
+export const MAP_VEHICLE = 'MAP_VEHICLE'
 
 // RECEIPTS
 export const SET_RECEIPTS = 'SET_RECEIPTS'

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */ /* eslint-disable no-console */
 <template>
   <div>
     <b-field grouped group-multiline>
@@ -186,6 +187,7 @@ export default {
     },
 
     viewRisk(risk) {
+      // eslint-disable-next-line no-console
       console.info(risk)
       this.selectRisk(risk)
       this.riskSelected = true
@@ -198,6 +200,7 @@ export default {
     viewCertificate(certificate) {
       this.selectRisk(certificate)
       this.certificateSelected = true
+      // eslint-disable-next-line no-console
       console.info(certificate)
       // setTimeout(() => {
       //   this.$refs.certificate.$mount()
