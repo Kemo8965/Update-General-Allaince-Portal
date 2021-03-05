@@ -19,59 +19,6 @@
     >
       <!-- Client Type Row -->
       <div class="columns">
-        <!-- Client Type -->
-        <div class="column">
-          <FormulateInput
-            v-model="clientType"
-            name="clientType"
-            type="autocomplete"
-            label="Client Type"
-            value="INDIVIDUAL"
-            field="label"
-            icon="account"
-            placeholder="e.g. Individual/Corp"
-            :options="clients"
-            @selected="clientSelected"
-          />
-        </div>
-
-        <!-- Agency ID Row -->
-
-        <!-- Agency ID -->
-        <div class="column">
-          <FormulateInput
-            v-model="agencyID"
-            name="agencyID"
-            type="autocomplete"
-            label="Agency"
-            field="label"
-            value="1"
-            icon="account"
-            placeholder="e.g. 1"
-            validation="number"
-            :options="clients"
-            @selected="clientSelected"
-          />
-        </div>
-
-        <!-- createdBy Row -->
-
-        <!-- Created By -->
-        <div class="column">
-          <FormulateInput
-            v-model="createdBy"
-            name="createdBy"
-            type="autocomplete"
-            label="Created By"
-            field="label"
-            value="1"
-            icon="account"
-            placeholder="e.g. 1"
-            :options="clients"
-            @selected="clientSelected"
-          />
-        </div>
-
         <!-- First Row -->
 
         <!-- Client -->
@@ -161,300 +108,296 @@
     </div>
     <FormulateForm
       v-if="startDate"
-      id="vehicles"
-      v-model="vehicles"
-      name="vehicles"
+      id="vehicle"
+      v-model="vehicle"
+      name="vehicle"
       :class="['block box']"
       @submit="onVehicleSubmit"
     >
       <b-tabs v-model="activeTab" expanded position="is-left" type="is-toggle">
         <b-tab-item label="+ Add Vehicle">
-          <add-vehicle-modal>
-            <div class="buttons">
-              <b-button
-                v-if="!addVehicle && numOfQuarters"
-                icon-left="plus"
-                type="is-primary"
-                label="Add Vehicle"
-                @click="toggleVehicleAddition"
-              />
-            </div>
-            <div v-if="addVehicle">
-              <!-- First Row -->
-              <div class="columns">
-                <!-- Vehicle Make -->
-                <div class="column">
-                  <FormulateInput
-                    v-model="make"
-                    type="text"
-                    label="Vehicle Make"
-                    name="vehicleMake"
-                    placeholder="Toyota"
-                    validation="bail|required|matches:/^[a-zA-z\s]+/"
-                  />
-                </div>
-
-                <!-- Vehicle Model -->
-                <div class="column">
-                  <FormulateInput
-                    v-model="model"
-                    type="text"
-                    label="Vehicle Model"
-                    name="vehicleModelName"
-                    placeholder="Corolla"
-                    validation="bail|required|matches:/^[a-zA-z\s]+/"
-                    :disabled="!make"
-                  />
-                </div>
-
-                <!-- Year of Manufacture -->
-                <div class="column">
-                  <FormulateInput
-                    v-model="yearOfManufacture"
-                    type="text"
-                    label="Year of Manufacture"
-                    name="yearOfManufacture"
-                    placeholder="2005"
-                    :disabled="!model"
-                    validation="bail|required|number|min:4,length|max:4,length"
-                  />
-                </div>
-              </div>
-
-              <!-- Second Row -->
-              <div class="columns">
-                <!-- Registration Number -->
-                <div class="column">
-                  <FormulateInput
-                    v-model="regNumber"
-                    type="text"
-                    label="Registration Number"
-                    name="vehicleRegNumber"
-                    placeholder="ABC123ZM"
-                    validation="bail|required|alphanumeric|valid_reg_number"
-                    :disabled="!yearOfManufacture"
-                    :validation-rules="{ validRegNumber }"
-                    :validation-messages="{
-                      validRegNumber:
-                        'A vehicle with this registration number is already part of an active policy.',
-                    }"
-                  />
-                </div>
-
-                <!-- Engine Number -->
-                <div class="column">
-                  <FormulateInput
-                    v-model="engineNumber"
-                    type="text"
-                    label="Engine Number"
-                    name="vehicleEngineNumber"
-                    placeholder="Engine number"
-                    validation="bail|required|valid_engine_number|matches:/^[a-zA-z\s]+/"
-                    :disabled="!regNumber"
-                    :validation-rules="{ validEngineNumber }"
-                    :validation-messages="{
-                      validEngineNumber:
-                        'A vehicle with this engine number is already part of an active policy.',
-                    }"
-                  />
-                </div>
-
-                <!-- Chassis Number -->
-                <div class="column">
-                  <FormulateInput
-                    v-model="chassisNumber"
-                    type="text"
-                    label="Chassis Number"
-                    name="vehicleChassisNumber"
-                    placeholder="Chassis number"
-                    validation="bail|required|valid_chassis_number|matches:/^[a-zA-z\s]+/"
-                    :disabled="!engineNumber"
-                    :validation-rules="{ validChassisNumber }"
-                    :validation-messages="{
-                      validChassisNumber:
-                        'A vehicle with this chassis number is already part of an active policy.',
-                    }"
-                  />
-                </div>
-              </div>
-
-              <!-- Third Row -->
-              <div class="columns">
-                <!-- Colour -->
-                <div class="column">
-                  <FormulateInput
-                    v-model="color"
-                    name="vehicleColour"
-                    type="autocomplete"
-                    label="Color"
-                    icon="palette"
-                    placeholder="Pearl"
-                    validation="required"
-                    data-ref="colorComplete"
-                    data-additional-prompt="Add color"
-                    :options="colors"
-                    :disabled="!chassisNumber"
-                  />
-                </div>
-
-                <!-- Cubic Capacity -->
-                <div class="column">
-                  <FormulateInput
-                    v-model="cubicCapacity"
-                    type="text"
-                    label="Cubic Capacity"
-                    name="cubicCapacity"
-                    placeholder="1834"
-                    :disabled="color === null"
-                    validation="bail|required|number|min:3,length|max:4,length"
-                  />
-                </div>
-
-                <!-- Seating Capacity -->
-                <div class="column">
-                  <FormulateInput
-                    v-model="seatCapacity"
-                    type="text"
-                    label="Seating Capacity"
-                    name="seatCapacity"
-                    placeholder="5"
-                    :disabled="!cubicCapacity"
-                    validation="bail|required|number|max:2,length"
-                  />
-                </div>
-              </div>
-
-              <!-- Fourth Row -->
-              <div class="columns">
-                <!-- Product Type -->
-                <div class="column">
-                  <!-- v-model="productType" -->
-                  <FormulateInput
-                    type="select"
-                    label="Product Type"
-                    name="productType"
-                    placeholder="-- Please select a product type --"
-                    validation="required"
-                    data-is-expanded
-                    :options="productTypes"
-                    :disabled="!seatCapacity"
-                  />
-                </div>
-
-                <!-- Body Type -->
-                <div class="column">
-                  <FormulateInput
-                    v-model="bodyType"
-                    type="select"
-                    label="Body Type"
-                    name="bodyType"
-                    placeholder="-- Please select a body type --"
-                    validation="required"
-                    data-is-expanded
-                    :disabled="!seatCapacity"
-                    :options="bodyTypes"
-                  />
-                </div>
-
-                <!-- Certificate Number -->
-                <div class="column">
-                  <FormulateInput
-                    v-model="certificateNumber"
-                    type="text"
-                    label="Certificate Number"
-                    name="certificateNumber"
-                    placeholder="Cover note certificate number"
-                    validation="required|number"
-                    :disabled="!bodyType"
-                  />
-                </div>
-              </div>
-
-              <!-- Fifth Row -->
-              <div class="columns">
-                <!-- Vehicle quarters -->
-                <div class="column">
-                  <FormulateInput
-                    v-model="vehicleNumOfQuarters"
-                    type="select"
-                    label="Quarters"
-                    name="vehicleNumOfQuarters"
-                    placeholder="-- Please select a quarter --"
-                    data-is-expanded
-                    :validation="[
-                      ['required'],
-                      ['max', numOfQuarters, 'value'],
-                    ]"
-                    :validation-messages="{
-                      max: `The number of quarters cannot be more than the policy's number of quarters: ${numOfQuarters}.`,
-                    }"
-                    :options="quarters"
-                    :disabled="!certificateNumber"
-                  />
-                </div>
-
-                <!-- Vehicle Start date -->
-                <div class="column">
-                  <FormulateInput
-                    v-model="vehicleStartDate"
-                    type="datepicker"
-                    label="Start Date"
-                    name="startDate"
-                    placeholder="-- Please select start date --"
-                    validation="required"
-                    :disabled="!vehicleNumOfQuarters"
-                    :min-date="minDate"
-                  />
-                </div>
-
-                <!-- Vehicle End date -->
-                <div class="column">
-                  <FormulateInput
-                    v-model="vehicleEndDate"
-                    type="datepicker"
-                    label="End Date"
-                    name="endDate"
-                    :disabled="true"
-                  />
-                </div>
-              </div>
-
-              <!-- Computations -->
-
-              <!-- Final Row -->
-              <div class="columns is-centered">
-                <div class="column is-half">
-                  <div class="buttons is-centered has-addons">
-                    <b-button
-                      form="vehicle"
-                      icon-left="upload"
-                      type="is-primary"
-                      native-type="submit"
-                      @click="onVehicleSubmit"
-                      >Add Vehicle</b-button
-                    >
-                    <b-button icon-left="reload" @click="resetVehicleForm"
-                      >Reset Form</b-button
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Added Vehicles Table -->
-            <div v-if="vehicles" class="columns is-centered">
+          <!-- <div class="buttons">
+            <b-button
+              v-if="!addVehicle && numOfQuarters"
+              icon-left="plus"
+              type="is-primary"
+              label="Add Vehicle"
+              @click="toggleVehicleAddition"
+            />
+          </div> -->
+          <div>
+            <!-- First Row -->
+            <div class="columns">
+              <!-- Vehicle Make -->
               <div class="column">
-                <vehicles-table
-                  :vehicles="vehicles"
-                  delete-vehicles
-                  @vehicle-deleted="onVehicleDeleted"
-                ></vehicles-table>
+                <FormulateInput
+                  v-model="make"
+                  type="text"
+                  label="Vehicle Make"
+                  name="vehicleMake"
+                  placeholder="Toyota"
+                  validation="bail|required|matches:/^[a-zA-z\s]+/"
+                />
+              </div>
+
+              <!-- Vehicle Model -->
+              <div class="column">
+                <FormulateInput
+                  v-model="model"
+                  type="text"
+                  label="Vehicle Model"
+                  name="vehicleModelName"
+                  placeholder="Corolla"
+                  validation="bail|required|matches:/^[a-zA-z\s]+/"
+                  :disabled="!make"
+                />
+              </div>
+
+              <!-- Year of Manufacture -->
+              <div class="column">
+                <FormulateInput
+                  v-model="yearOfManufacture"
+                  type="text"
+                  label="Year of Manufacture"
+                  name="yearOfManufacture"
+                  placeholder="2005"
+                  :disabled="!model"
+                  validation="bail|required|number|min:4,length|max:4,length"
+                />
               </div>
             </div>
-          </add-vehicle-modal>
+
+            <!-- Second Row -->
+            <div class="columns">
+              <!-- Registration Number -->
+              <div class="column">
+                <FormulateInput
+                  v-model="regNumber"
+                  type="text"
+                  label="Registration Number"
+                  name="vehicleRegNumber"
+                  placeholder="ABC123ZM"
+                  validation="bail|required|alphanumeric|valid_reg_number"
+                  :disabled="!yearOfManufacture"
+                  :validation-rules="{ validRegNumber }"
+                  :validation-messages="{
+                    validRegNumber:
+                      'A vehicle with this registration number is already part of an active policy.',
+                  }"
+                />
+              </div>
+
+              <!-- Engine Number -->
+              <div class="column">
+                <FormulateInput
+                  v-model="engineNumber"
+                  type="text"
+                  label="Engine Number"
+                  name="vehicleEngineNumber"
+                  placeholder="Engine number"
+                  validation="bail|required|valid_engine_number|matches:/^[a-zA-z\s]+/"
+                  :disabled="!regNumber"
+                  :validation-rules="{ validEngineNumber }"
+                  :validation-messages="{
+                    validEngineNumber:
+                      'A vehicle with this engine number is already part of an active policy.',
+                  }"
+                />
+              </div>
+
+              <!-- Chassis Number -->
+              <div class="column">
+                <FormulateInput
+                  v-model="chassisNumber"
+                  type="text"
+                  label="Chassis Number"
+                  name="vehicleChassisNumber"
+                  placeholder="Chassis number"
+                  validation="bail|required|valid_chassis_number|matches:/^[a-zA-z\s]+/"
+                  :disabled="!engineNumber"
+                  :validation-rules="{ validChassisNumber }"
+                  :validation-messages="{
+                    validChassisNumber:
+                      'A vehicle with this chassis number is already part of an active policy.',
+                  }"
+                />
+              </div>
+            </div>
+
+            <!-- Third Row -->
+            <div class="columns">
+              <!-- Colour -->
+              <div class="column">
+                <FormulateInput
+                  v-model="color"
+                  name="vehicleColour"
+                  type="autocomplete"
+                  label="Color"
+                  icon="palette"
+                  placeholder="Pearl"
+                  validation="required"
+                  data-ref="colorComplete"
+                  data-additional-prompt="Add color"
+                  :options="colors"
+                  :disabled="!chassisNumber"
+                />
+              </div>
+
+              <!-- Cubic Capacity -->
+              <div class="column">
+                <FormulateInput
+                  v-model="cubicCapacity"
+                  type="text"
+                  label="Cubic Capacity"
+                  name="cubicCapacity"
+                  placeholder="1834"
+                  :disabled="color === null"
+                  validation="bail|required|number|min:3,length|max:4,length"
+                />
+              </div>
+
+              <!-- Seating Capacity -->
+              <div class="column">
+                <FormulateInput
+                  v-model="seatCapacity"
+                  type="text"
+                  label="Seating Capacity"
+                  name="seatCapacity"
+                  placeholder="5"
+                  :disabled="!cubicCapacity"
+                  validation="bail|required|number|max:2,length"
+                />
+              </div>
+            </div>
+
+            <!-- Fourth Row -->
+            <div class="columns">
+              <!-- Product Type -->
+              <div class="column">
+                <FormulateInput
+                  v-model="productTypeID"
+                  type="select"
+                  label="Product Type"
+                  name="productTypeID"
+                  placeholder="-- Please select a product type --"
+                  validation="required"
+                  data-is-expanded
+                  :options="productTypes"
+                  :disabled="!seatCapacity"
+                />
+              </div>
+
+              <!-- Body Type -->
+              <div class="column">
+                <FormulateInput
+                  v-model="bodyType"
+                  type="select"
+                  label="Body Type"
+                  name="bodyType"
+                  placeholder="-- Please select a body type --"
+                  validation="required"
+                  data-is-expanded
+                  :disabled="!seatCapacity"
+                  :options="bodyTypes"
+                />
+              </div>
+
+              <!-- Certificate Number -->
+              <div class="column">
+                <FormulateInput
+                  v-model="certificateNumber"
+                  type="text"
+                  label="Certificate Number"
+                  name="certificateNumber"
+                  placeholder="Cover note certificate number"
+                  validation="required|number"
+                  :disabled="!bodyType"
+                />
+              </div>
+            </div>
+
+            <!-- Fifth Row -->
+            <div class="columns">
+              <!-- Vehicle quarters -->
+              <div class="column">
+                <FormulateInput
+                  v-model="vehicleNumOfQuarters"
+                  type="select"
+                  label="Quarters"
+                  name="vehicleNumOfQuarters"
+                  placeholder="-- Please select a quarter --"
+                  data-is-expanded
+                  :validation="[['required'], ['max', numOfQuarters, 'value']]"
+                  :validation-messages="{
+                    max: `The number of quarters cannot be more than the policy's number of quarters: ${numOfQuarters}.`,
+                  }"
+                  :options="quarters"
+                  :disabled="!certificateNumber"
+                />
+              </div>
+
+              <!-- Vehicle Start date -->
+              <div class="column">
+                <FormulateInput
+                  v-model="vehicleStartDate"
+                  type="datepicker"
+                  label="Start Date"
+                  name="startDate"
+                  placeholder="-- Please select start date --"
+                  validation="required"
+                  :disabled="!vehicleNumOfQuarters"
+                  :min-date="minDate"
+                />
+              </div>
+
+              <!-- Vehicle End date -->
+              <div class="column">
+                <FormulateInput
+                  v-model="vehicleEndDate"
+                  type="datepicker"
+                  label="End Date"
+                  name="endDate"
+                  :disabled="true"
+                />
+              </div>
+            </div>
+
+            <!-- Computations -->
+
+            <!-- Final Row -->
+            <div class="columns is-centered">
+              <div class="column is-half">
+                <div class="buttons is-centered has-addons">
+                  <b-button
+                    form="vehicle"
+                    icon-left="upload"
+                    type="is-primary"
+                    native-type="submit"
+                    >Add Vehicle</b-button
+                  >
+                  <b-button icon-left="reload" @click="resetVehicleForm"
+                    >Reset Vehicle</b-button
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Added Vehicles Table -->
+          <div v-if="vehicles" class="columns is-centered">
+            <div class="column">
+              <vehicles-table
+                :vehicles="vehicles"
+                delete-vehicles
+                @vehicle-deleted="onVehicleDeleted"
+              ></vehicles-table>
+            </div>
+          </div>
         </b-tab-item>
         <b-tab-item label="+ Add Vehicle Fleet">
-          <add-vehicle-fleet-modal></add-vehicle-fleet-modal>
+          <add-vehicle-fleet-modal
+            @add-fleet="onAddFleet"
+          ></add-vehicle-fleet-modal>
         </b-tab-item>
       </b-tabs>
 
@@ -484,6 +427,7 @@
 import { mapFields } from 'vuex-map-fields'
 import { mapActions, mapGetters } from 'vuex'
 import { DateTime } from 'luxon'
+import cloneDeep from 'lodash/cloneDeep'
 
 import AddVehicleFleetModal from '~/components/modals/add-vehicle-fleet-modal.vue'
 
@@ -523,60 +467,30 @@ export default {
       'form.vehicles',
     ]),
 
-    ...mapFields[
-      ('policies',
-      {
-        vehicles: 'vehicles',
-        make: 'vehicles.vehicleMake',
-        model: 'vehicles.vehicleModelName',
-        yearOfManufacture: 'vehicles.yearOfManufacture',
-        regNumber: 'vehicles.vehicleRegNumber',
-        engineNumber: 'vehicles.vehicleEngineNumber',
-        chassisNumber: 'vehicles.vehicleChassisNumber',
-        color: 'vehicles.vehicleColour',
-        seatCapacity: 'vehicles.seatCapacity',
-        cubicCapacity: 'vehicles.cubicCapacity',
-        bodyType: 'vehicles.bodyType',
-        productTypeID: 'vehicles.productTypeID',
-        certificateNumber: 'vehicles.certificateNumber',
-        vehicleStartDate: 'vehicles.startDate',
-        vehicleEndDate: 'vehicles.endDate',
-        vehicleNumOfQuarters: 'vehicles.numOfQuarters',
-        insuredNames: 'vehicles.insuredNames',
-        premium: 'vehicles.premium',
-      })
-    ],
-
-    /*
-    ...mapFields('policies', [
-      'form',
-      'vehicles.vehicleMake',
-      'vehicles.vehicleModelName',
-      'vehicles.yearOfManufacture',
-      'vehicles.vehicleRegNumber',
-      'vehicles.vehicleEngineNumber',
-      'vehicles.vehicleChassisNumber',
-      'vehicles.vehicleColour',
-      'vehicles.seatCapacity',
-      'vehicles.cubicCapacity',
-      'vehicles.bodyType',
-      'vehicles.productTypeID',
-      'vehicles.certificateNumber',
-      'vehicles.startDate',
-      'vehicles.endDate',
-      'vehicles.numOfQuarters',
-      'vehicles.insuredNames',
-      'vehicles.insuredNames',
-      'vehicles.premium',
-    ]),
-
-    */
+    ...mapFields('vehicles', {
+      storeVehicle: 'vehicle',
+      make: 'vehicle.vehicleMake',
+      model: 'vehicle.vehicleModelName',
+      yearOfManufacture: 'vehicle.yearOfManufacture',
+      regNumber: 'vehicle.vehicleRegNumber',
+      engineNumber: 'vehicle.vehicleEngineNumber',
+      chassisNumber: 'vehicle.vehicleChassisNumber',
+      color: 'vehicle.vehicleColour',
+      seatCapacity: 'vehicle.seatCapacity',
+      cubicCapacity: 'vehicle.cubicCapacity',
+      bodyType: 'vehicle.bodyType',
+      productTypeID: 'vehicle.productTypeID',
+      certificateNumber: 'vehicle.certificateNumber',
+      vehicleStartDate: 'vehicle.startDate',
+      vehicleEndDate: 'vehicle.endDate',
+      vehicleNumOfQuarters: 'vehicle.numOfQuarters',
+      insuredNames: 'vehicle.insuredNames',
+    }),
 
     ...mapGetters('vehicles', [
       'bodyTypes',
       'productTypes',
       'vehiclesInActivePolicies',
-      'mapVehicle',
     ]),
 
     ...mapGetters('clients', {
@@ -629,17 +543,6 @@ export default {
     },
   },
 
-  /* mounted() {
-    // this.clientType = 'INDIVIDUAL'
-    this.createdBy = '1'
-  },
-
-  */
-
-  mounted() {
-    this.clientType = 'INDIVIDUAL'
-  },
-
   created() {
     if (typeof this.startDate === 'string')
       this.startDate = new Date(this.startDate)
@@ -666,17 +569,17 @@ export default {
 
     ...mapActions('policies', ['createPolicy']),
 
-    ...mapActions('vehicles', ['mapVehicle']),
-
     toggleVehicleAddition() {
       this.addVehicle = !this.addVehicle
     },
 
     clientSelected(option, event) {
       if (option) {
+        this.vehicle.insuredNames = option.label
         this.insuredNames = option.label
       }
       if (!event) {
+        this.vehicle.insuredNames = null
         this.insuredNames = null
       }
     },
@@ -726,13 +629,18 @@ export default {
       this.vehicleEndDate = endDate.endOf('day').toJSDate()
     },
 
-    onVehicleSubmit() {
-      this.mapVehicle()
+    onVehicleSubmit(vehicle) {
       // alert(`Submitted: ${JSON.stringify(vehicle)}`)
+      this.vehicles.push(vehicle)
+      this.resetVehicleForm()
+    },
+
+    onAddFleet(vehicles) {
+      vehicles.forEach((vehicle) => this.vehicles.push(vehicle))
     },
 
     clearVehicleForm() {
-      this.vehicle = {
+      this.storeVehicle = {
         vehicleMake: null,
         vehicleModelName: null,
         yearOfManufacture: null,
@@ -751,6 +659,7 @@ export default {
         insuredNames: null,
         premium: null,
       }
+      this.vehicle = cloneDeep(this.storeVehicle)
     },
 
     resetVehicleForm() {

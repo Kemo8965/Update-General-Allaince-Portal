@@ -9,8 +9,8 @@ export default {
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
   },
 
-  // target: 'static',
-  target: 'server',
+  target: 'static',
+  // target: 'server',
 
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
@@ -66,7 +66,7 @@ export default {
     'nuxt-buefy',
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    '@nuxtjs/proxy',
+    // '@nuxtjs/proxy',
     '@nuxtjs/auth-next',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
@@ -96,9 +96,9 @@ export default {
           // autoFetch: true
         },
         endpoints: {
-          login: { url: '/api/auth/login', method: 'post' },
-          logout: false, // { url: '/api/auth/logout', method: 'post' },
-          user: false, // { url: '/api/auth/user', method: 'get' },
+          login: { url: '/auth/login', method: 'post' },
+          logout: false, // { url: '/auth/logout', method: 'post' },
+          user: false, // { url: '/auth/user', method: 'get' },
         },
       },
     },
@@ -131,15 +131,15 @@ export default {
   // },
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
-  proxy: {
-    '/api/': {
-      target: process.env.NUXT_ENV_NEW_API_URL,
-      pathRewrite: { '^/api/': '' },
-    },
-  },
+  // proxy: {
+  //   '/api/': {
+  //     target: process.env.NUXT_ENV_NEW_API_URL,
+  //     pathRewrite: { '^/api/': '' },
+  //   },
+  // },
 
   axios: {
-    proxy: true,
+    // proxy: true,
     // https: true,
     baseURL: process.env.NUXT_ENV_NEW_API_URL,
   },

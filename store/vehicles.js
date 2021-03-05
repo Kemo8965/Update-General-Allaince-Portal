@@ -1,116 +1,101 @@
 /* eslint-disable prettier/prettier */
 import { getField, updateField } from 'vuex-map-fields'
 import { api } from '~/helpers/axios-instance'
-import { GET_PRODUCT_TYPES, MAP_VEHICLE, SET_LOADING } from '~/helpers/mutation-types'
+import { GET_PRODUCT_TYPES, SET_LOADING } from '~/helpers/mutation-types'
 
 export const state = () => ({
-    loading: false,
-    vehicle: {
-        vehicleMake: null,
-        vehicleModelName: null,
-        yearOfManufacture: null,
-        vehicleRegNumber: null,
-        vehicleEngineNumber: null,
-        vehicleChassisNumber: null,
-        vehicleColour: null,
-        seatCapacity: null,
-        cubicCapacity: null,
-        bodyType: null,
-        productTypeID: null,
-        certificateNumber: null,
-        startDate: null,
-        endDate: null,
-        numOfQuarters: null,
-        insuredNames: null,
-        premium: null,
-    },
-    productTypes: [],
-    // productTypes: [
-    //   { value: 1, label: 'Private' },
-    //   { value: 2, label: 'Bus / Taxi' },
-    //   { value: 3, label: 'Commercial' },
-    // ],
-    bodyTypes: [
-        'Sedan',
-        'Trailer',
-        'Truck',
-        'Van',
-        'SUV',
-        'Hatchback',
-        'Horse',
-        'Motorcycle',
-    ],
+  loading: false,
+  vehicle: {
+    vehicleMake: null,
+    vehicleModelName: null,
+    yearOfManufacture: null,
+    vehicleRegNumber: null,
+    vehicleEngineNumber: null,
+    vehicleChassisNumber: null,
+    vehicleColour: null,
+    seatCapacity: null,
+    cubicCapacity: null,
+    bodyType: null,
+    productTypeID: null,
+    certificateNumber: null,
+    startDate: null,
+    endDate: null,
+    numOfQuarters: null,
+    insuredNames: null,
+    premium: null,
+  },
+  productTypes: [],
+  // productTypes: [
+  //   { value: 1, label: 'Private' },
+  //   { value: 2, label: 'Bus / Taxi' },
+  //   { value: 3, label: 'Commercial' },
+  // ],
+  bodyTypes: [
+    'Sedan',
+    'Trailer',
+    'Truck',
+    'Van',
+    'SUV',
+    'Hatchback',
+    'Horse',
+    'Motorcycle',
+  ],
 })
 
 export const getters = {
-    getField,
+  getField,
 
-    loading(state) {
-        return state.loading
-    },
+  loading(state) {
+    return state.loading
+  },
 
-    productTypes(state) {
-        return state.productTypes.map((productType) => ({
-            label: productType.productTypeName,
-            value: productType.id,
-        }))
-    },
+  productTypes(state) {
+    return state.productTypes.map((productType) => ({
+      label: productType.productTypeName,
+      value: productType.id,
+    }))
+  },
 
-    bodyTypes(state) {
-        return state.bodyTypes
-            .sort()
-            .map((bodyType) => ({ label: bodyType, value: bodyType }))
-    },
+  bodyTypes(state) {
+    return state.bodyTypes
+      .sort()
+      .map((bodyType) => ({ label: bodyType, value: bodyType }))
+  },
 
-    vehiclesInActivePolicies(_, __, ___, rootGetters) {
-        const policies = rootGetters['policies/activePolicies']
-        return policies
-            .map((policy) => policy.vehicles.map((vehicle) => vehicle))
-            .flat()
-    },
+  vehiclesInActivePolicies(_, __, ___, rootGetters) {
+    const policies = rootGetters['policies/activePolicies']
+    return policies
+      .map((policy) => policy.vehicles.map((vehicle) => vehicle))
+      .flat()
+  },
 
-    vehicle(state) {
-        return state.vehicle
-    }
+  vehicle(state) {
+    return state.vehicle
+  },
 }
 
 export const mutations = {
-    updateField,
+  updateField,
 
-    [SET_LOADING](state, loading) {
-        state.loading = loading
-    },
+  [SET_LOADING](state, loading) {
+    state.loading = loading
+  },
 
-    [MAP_VEHICLE](state, payload) {
-        state.mapVehicle.push(payload)
-    },
-
-
-    [GET_PRODUCT_TYPES](state, productTypes) {
-        state.productTypes = productTypes
-    },
+  [GET_PRODUCT_TYPES](state, productTypes) {
+    state.productTypes = productTypes
+  },
 }
 
 export const actions = {
-    async getProductTypes({ commit }) {
-        try {
-            commit(SET_LOADING, true)
-            const { data: productTypes } = await api.get(`/tp/productTypes`)
-            commit(GET_PRODUCT_TYPES, productTypes.data)
-            commit(SET_LOADING, false)
-        } catch ({ message }) {
-            commit(SET_LOADING, false)
-            this.$log.error(message)
-        }
-    },
-
-    mapVehicle({ state, commit }) {
-        const newVehicle = state.vehicle
-
-        // eslint-disable-next-line no-console
-        // commit(MAP_VEHICLE, true)
-        // const { data: vehicle } = http.post(`/tp/create/`)
-        // eslint-disable-next-line no-console
-        console.log(newVehicle)
-    },
+  async getProductTypes({ commit }) {
+    try {
+      commit(SET_LOADING, true)
+      const { data: productTypes } = await api.get(`/tp/productTypes`)
+      commit(GET_PRODUCT_TYPES, productTypes.data)
+      commit(SET_LOADING, false)
+    } catch ({ message }) {
+      commit(SET_LOADING, false)
+      this.$log.error(message)
+    }
+  },
 }
